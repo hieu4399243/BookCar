@@ -1,11 +1,22 @@
 import React from "react";
 import "./App.css";
-import Main from "./pages/main";
+import {
+  Route,
+  Link,
+  Routes,
+} from "react-router-dom";
+import Main from "./pages/home/main";
+import Filter from "./pages/filter/filter";
+import List from "./pages/listCar/list";
 
 function App() {
   return (
-    <div className="h-screen bg-[#012f48] text-center">
-      <Main />
+    <div>
+      <Routes>
+        <Route path="/" element={<Main/>}></Route>
+        <Route path="/filter" element={<Filter/>}></Route>
+        <Route path="/list" element={<List/>}></Route>
+      </Routes>
     </div>
   );
 }
