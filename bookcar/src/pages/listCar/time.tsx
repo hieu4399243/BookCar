@@ -19,7 +19,7 @@ export default function Time() {
 
       <div className="grid grid-cols-2">
         <div className="bg-white p-3 m-3 rounded-md">
-          <button className="font-normal text-[#a7a7a7]">Sáng sớm 1</button>
+          <button className="font-normal text-[#a7a7a7]">Sáng sớm</button>
           <p>0:00 - 6:00</p>
         </div>
         <div className="bg-white p-3 m-3 rounded-md">
