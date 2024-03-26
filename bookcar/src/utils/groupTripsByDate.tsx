@@ -10,6 +10,7 @@ export function groupTripsByTimeOfDate(trips: any[]) {
 
   trips.forEach((trip) => {
     const pickUpTime = parseTime(trip.pick_up_time);
+    let timeOfDay = '' ;
     if (pickUpTime >= 0 && pickUpTime < 6) {
       groupedTrips.morning.push(trip);
     } else if (pickUpTime >= 6 && pickUpTime < 12) {
@@ -22,6 +23,8 @@ export function groupTripsByTimeOfDate(trips: any[]) {
   });
   return groupedTrips;
 }
+
+
 
 function parseTime(timeString: string) {
   const [hours, minutes] = timeString.split(':').map(Number);
