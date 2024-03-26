@@ -15,7 +15,6 @@ export default function List() {
       </div>
       <div className='bg-[#dedede] h-screen'>
         <Time/>
-        <Price/>
         <Garage/>
         <Category/>
       </div>

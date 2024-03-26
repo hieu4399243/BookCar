@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Range } from "react-range";
+import { NumberWithComans } from "../../utils/numberWithComas";
 
-export default function Price() {
-  const [values, setValues] = useState([50, 900]);
+interface PriceProps {
+  setPriceRange: React.Dispatch<React.SetStateAction<number[]>>;
+  priceRange: number[];
+}
+
+const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
   return (
     <div>
       <div className="flex justify-between text-center items-center px-5">
@@ -13,9 +18,9 @@ export default function Price() {
         <Range
           step={1}
           min={0}
-          max={3000}
-          values={values}
-          onChange={(newValues) => setValues(newValues)}
+          max={3000000}
+          values={priceRange}
+          onChange={(newValues) => setPriceRange(newValues)}
           renderTrack={({ props, children }) => (
             <div
               {...props}
@@ -33,8 +38,10 @@ export default function Price() {
                   height: "6px",
                   backgroundColor: "#007bff",
                   borderRadius: "3px",
-                  left: `${(values[0] / 3000) * 100}%`,
-                  width: `${((values[1] - values[0]) / 3000) * 100}%`,
+                  left: `${(priceRange[0] / 3000000) * 100}%`,
+                  width: `${
+                    ((priceRange[1] - priceRange[0]) / 3000000) * 100
+                  }%`,
                 }}
               />
             </div>
@@ -54,10 +61,12 @@ export default function Price() {
           )}
         />
         <div className="flex justify-between text-center items-center mt-4">
-          <div>{values[0].toFixed(0)}</div>
-          <div>{values[1].toFixed(0)}</div>
+          <div>{NumberWithComans(priceRange[0].toFixed(0))}đ</div>
+          <div>{NumberWithComans(priceRange[1].toFixed(0))}đ</div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Price;
