@@ -5,7 +5,7 @@ import Price from "./price";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 console.log(groupedTrips);
-const groupedTripsLength : any = data.json.coreData.data
+const groupedTripsLength: any = data.json.coreData.data;
 console.log(groupedTripsLength.length);
 interface Trip {
   uuid: string;
@@ -18,12 +18,14 @@ interface Trip {
 
 export default function Time() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTripsLength);
+  const [filteredTrips, setFilteredTrips] =
+    useState<Trip[]>(groupedTripsLength);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [showAllData, setShowAllData] = useState<boolean>(true);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
+  const [vehicleCheckboxes, setVehicleCheckboxes] = useState<boolean>(false);
 
-  
+
   useEffect(() => {
     if (selectedTime && !showAllData) {
       const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
@@ -38,6 +40,8 @@ export default function Time() {
       console.log("Lọc theo giá:", filteredTripsByPrice);
     }
   }, [selectedTime, priceRange, showAllData]);
+
+  
 
   const handleFilter: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const time = event.currentTarget.getAttribute("data-time");
@@ -167,7 +171,7 @@ export default function Time() {
                         <p>{trip.transport_information.name}</p>
                       </div>
                       <div className="round">
-                        <input type="checkbox" checked={true} />
+                        <input type="checkbox" checked={false} />
                         <label></label>
                       </div>
                     </li>
@@ -193,6 +197,10 @@ export default function Time() {
                         <div>
                           <p>{name}</p>
                         </div>
+                        <div className="round">
+                          <input type="checkbox" checked={false} />
+                          <label></label>
+                        </div>
                       </li>
                     );
                   })}
@@ -209,6 +217,10 @@ export default function Time() {
                     <li key={trip.uuid} className="garage-list-item">
                       <div>
                         <p>{trip.vehicle_name}</p>
+                      </div>
+                      <div className="round">
+                        <input type="checkbox" checked={false} />
+                        <label></label>
                       </div>
                     </li>
                   ))

@@ -18,12 +18,12 @@ export default function Main() {
             </h1>
             <div className="absolute top-96">
               <div>
-                <Link className="text-[25px] mb-3" to={'/list'}>
+                <Link className="text-[25px] mb-3" to={'/filter'}>
                   Danh sách chuyến đi
                 </Link>
               </div>
               <div>
-                <Link className="text-[25px]" to={'/filter'}>Lọc chuyến xe</Link>
+                <Link className="text-[25px]" to={'/list'}>Lọc chuyến xe</Link>
               </div>
             </div>
           </div>
