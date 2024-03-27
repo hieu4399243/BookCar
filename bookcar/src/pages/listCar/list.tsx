@@ -2,8 +2,6 @@ import React from 'react'
 import ic_close from '../../assets/images/ic_close.svg';
 import Time from './time';
 import Price from './price';
-import Garage from './garage';
-import Category from './category';
  
 
 export default function List() {
@@ -15,8 +13,6 @@ export default function List() {
       </div>
       <div className='bg-[#dedede] h-screen'>
         <Time/>
-        <Garage/>
-        <Category/>
       </div>
     </div>
   )

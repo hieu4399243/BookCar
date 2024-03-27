@@ -11,12 +11,17 @@ interface Trip {
   transport_information: {
     name: string;
   };
+  vehicle_name: string;
 }
 
 export default function Time() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
+  const [selectedTrips, setSelectedTrips] = useState<string[]>([]);
+  const [selectedVehicleNames, setSelectedVehicleNames] = useState<string[]>(
+    []
+  );
 
   useEffect(() => {
     if (selectedTime) {
@@ -46,6 +51,26 @@ export default function Time() {
       setPriceRange([minPrice, maxPrice]);
     }
   };
+
+  const handleCheckboxChange = (uuid: string) => {
+    const trip = filteredTrips.find((trip) => trip.uuid === uuid);
+    console.log(trip);
+    if (trip) {
+      const index = selectedTrips.indexOf(uuid);
+      if (index !== -1) {
+        setSelectedTrips(selectedTrips.filter((item) => item !== uuid));
+        setSelectedVehicleNames(
+          selectedVehicleNames.filter((name) => name !== trip.vehicle_name)
+        );
+      } else {
+        setSelectedTrips([...selectedTrips, uuid]);
+        setSelectedVehicleNames([...selectedVehicleNames, trip.vehicle_name]);
+      }
+    }
+  };
+
+  const uniqueVehicleNames = filteredTrips.length > 0 ? Array.from(new Set(filteredTrips.map(trip => trip.vehicle_name))) : [];
+  const uniqueTransportName = filteredTrips.length > 0 ? Array.from(new Set(filteredTrips.map(trip => trip.transport_information.name))) : [];
 
   return (
     <div className="">
@@ -88,24 +113,69 @@ export default function Time() {
 
       <Price setPriceRange={setPriceRange} priceRange={priceRange} />
 
-      <div>
-        <div className="flex justify-between text-center items-center px-5">
+      <div className="garage">
+        <div>
           <h2 className="font-semibold">Nhà xe</h2>
         </div>
-        {filteredTrips.length > 0 ? (
-          <div>
-            <h3>Các chuyến xe trong thời gian {selectedTime}:</h3>
-            <ul>
-              {filteredTrips.map((trip) => (
-                <li key={trip.uuid}>
-                  <p>Tên phương tiện: {trip.transport_information.name}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p>Không có chuyến xe nào trong thời gian đã chọn.</p>
-        )}
+        <div>
+          {filteredTrips.length > 0 ? (
+            <div className="garage-list">
+              <ul>
+                {filteredTrips.map((trip) => (
+                  <li key={trip.uuid} className="garage-list-item">
+                    <div>
+                      <p>{trip.transport_information.name}</p>
+                    </div>
+                    <div className="round">
+                      <input
+                        id={`checkbox-${trip.uuid}`}
+                        type="checkbox"
+                        checked={selectedTrips.includes(trip.uuid)}
+                        onChange={() => handleCheckboxChange(trip.uuid)}
+                      />
+                      <label htmlFor={`checkbox-${trip.uuid}`}></label>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="garage-list">
+              Không có chuyến xe nào trong thời gian đã chọn.
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="category-car">
+        <div>
+          <h2 className="font-semibold">Loại xe</h2>
+        </div>
+        <div>
+          {filteredTrips.length > 0 ? (
+            <div className="garage-list">
+              <ul>
+                {filteredTrips.map((trip) => (
+                  <li key={trip.uuid} className="category-list-item">
+                    <div>
+                      {selectedTrips.includes(trip.uuid) && (
+                        <p>Phương tiện: {trip.vehicle_name}</p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="garage-list">Không có phòng </p>
+          )}
+        </div>
+
+        <div className="footer-list">
+          <button className="button-left">Xoá lọc</button>
+          <button className="button-right">
+            Áp dụng({selectedTrips.length})
+          </button>
+        </div>
       </div>
     </div>
   );
