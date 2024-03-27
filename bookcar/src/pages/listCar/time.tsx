@@ -25,7 +25,7 @@ export default function Time() {
   const [showAllData, setShowAllData] = useState<boolean>(true);
 
   useEffect(() => {
-    if (selectedTime) {
+    if (selectedTime && !showAllData) {
       const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
       const filteredTripsByPrice = tripsInSelectedTime.filter((trip: Trip) => {
         return (
@@ -34,14 +34,14 @@ export default function Time() {
         );
       });
       setFilteredTrips(filteredTripsByPrice);
-      
     }
-  }, [selectedTime, priceRange]);
+  }, [selectedTime, priceRange, showAllData]);
 
   const handleFilter: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const time = event.currentTarget.getAttribute("data-time");
     if (time) {
       setSelectedTime(time);
+      setShowAllData(false);
       const tripsInSelectedTime = (groupedTrips[time] as Trip[]).flat();
       setFilteredTrips(tripsInSelectedTime);
       let minPrice = Number.POSITIVE_INFINITY;
@@ -51,6 +51,9 @@ export default function Time() {
         maxPrice = Math.max(maxPrice, trip.discount_amount);
       });
       setPriceRange([minPrice, maxPrice]);
+    } else {
+      setSelectedTime(null);
+      setShowAllData(true);
     }
   };
 
@@ -84,6 +87,7 @@ export default function Time() {
 
   const handleCancel = () => {
     setSelectedTime(null);
+    setShowAllData(true);
     setFilteredTrips([]);
     setPriceRange([0, 3000000]);
     setSelectedTrips([]);
@@ -96,10 +100,11 @@ export default function Time() {
 
       <div className="grid grid-cols-2">
         <div
-          className={`time-option ${selectedTime === "morning" ? "selected" : ""}`}
+          className={`time-option ${
+            selectedTime === "morning" ? "selected" : ""
+          }`}
           onClick={handleFilter}
           data-time="morning"
-          
         >
           <button className="font-normal text-[#a7a7a7]">Sáng sớm</button>
           <p>0:00 - 6:00</p>
@@ -137,31 +142,54 @@ export default function Time() {
           <h2 className="font-semibold">Nhà xe</h2>
         </div>
         <div>
-          {filteredTrips.length > 0 ? (
+          {!showAllData ? (
+            filteredTrips.length > 0 ? (
+              <div className="garage-list">
+                <ul>
+                  {filteredTrips.map((trip) => (
+                    <li key={trip.uuid} className="garage-list-item">
+                      <div>
+                        <p>{trip.transport_information.name}</p>
+                      </div>
+                      <div className="round">
+                        <input
+                          id={`checkbox-${trip.uuid}`}
+                          type="checkbox"
+                          checked={selectedTrips.includes(trip.uuid)}
+                          onChange={() => handleCheckboxChange(trip.uuid)}
+                        />
+                        <label htmlFor={`checkbox-${trip.uuid}`}></label>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="garage-list">Không có chuyến xe nào.</p>
+            )
+          ) : (
             <div className="garage-list">
               <ul>
-                {filteredTrips.map((trip) => (
-                  <li key={trip.uuid} className="garage-list-item">
-                    <div>
-                      <p>{trip.transport_information.name}</p>
-                    </div>
-                    <div className="round">
-                      <input
-                        id={`checkbox-${trip.uuid}`}
-                        type="checkbox"
-                        checked={selectedTrips.includes(trip.uuid)}
-                        onChange={() => handleCheckboxChange(trip.uuid)}
-                      />
-                      <label htmlFor={`checkbox-${trip.uuid}`}></label>
-                    </div>
-                  </li>
-                ))}
+                {Object.keys(groupedTrips).map((time) =>
+                  (groupedTrips[time] as Trip[]).flat().map((trip) => (
+                    <li key={trip.uuid} className="garage-list-item">
+                      <div>
+                        <p>{trip.transport_information.name}</p>
+                      </div>
+                      <div className="round">
+                        <input
+                          id={`checkbox-${trip.uuid}`}
+                          type="checkbox"
+                          checked={selectedTrips.includes(trip.uuid)}
+                          onChange={() => handleCheckboxChange(trip.uuid)}
+                        />
+                        <label htmlFor={`checkbox-${trip.uuid}`}></label>
+                      </div>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
-          ) : (
-            <p className="garage-list">
-              Không có chuyến xe nào trong thời gian đã chọn.
-            </p>
           )}
         </div>
       </div>
