@@ -4,7 +4,9 @@ import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
 import Price from "./price";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
-
+console.log(groupedTrips);
+const groupedTripsLength : any = data.json.coreData.data
+console.log(groupedTripsLength.length);
 interface Trip {
   uuid: string;
   discount_amount: number;
@@ -16,19 +18,16 @@ interface Trip {
 
 export default function Time() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>([]);
+  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTripsLength);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
-  const [selectedGarage, setSelectedGarage] = useState<string[]>([]);
-  const [selectedVehicleNames, setSelectedVehicleNames] = useState<string[]>(
-    []
-  );
   const [showAllData, setShowAllData] = useState<boolean>(true);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
 
+  
   useEffect(() => {
     if (selectedTime && !showAllData) {
       const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
-      console.log(tripsInSelectedTime);
+      console.log("Chuyến xe đã lọc theo time: ", tripsInSelectedTime);
       const filteredTripsByPrice = tripsInSelectedTime.filter((trip: Trip) => {
         return (
           trip.discount_amount >= priceRange[0] &&
@@ -36,7 +35,7 @@ export default function Time() {
         );
       });
       setFilteredTrips(filteredTripsByPrice);
-      console.log(setFilteredTrips(filteredTripsByPrice));
+      console.log("Lọc theo giá:", filteredTripsByPrice);
     }
   }, [selectedTime, priceRange, showAllData]);
 
@@ -62,40 +61,24 @@ export default function Time() {
     }
   };
 
-  // const handleCheckboxChange = (uuid: string) => {
-  //   const trip = filteredTrips.find((trip) => trip.uuid === uuid);
-  //   console.log(trip);
-  //   if (trip) {
-  //     const index = selectedTrips.indexOf(uuid);
-  //     if (index !== -1) {
-  //       setSelectedTrips(selectedTrips.filter((item) => item !== uuid));
-  //       setSelectedVehicleNames(
-  //         selectedVehicleNames.filter((name) => name !== trip.vehicle_name)
-  //       );
-  //     } else {
-  //       setSelectedTrips([...selectedTrips, uuid]);
-  //       setSelectedVehicleNames([...selectedVehicleNames, trip.vehicle_name]);
-  //     }
-  //   }
-  // };
-
-  // const uniqueVehicleNames =
-  //   filteredTrips.length > 0
-  //     ? Array.from(new Set(filteredTrips.map((trip) => trip.vehicle_name)))
-  //     : [];
+  const uniqueVehicleNames =
+    filteredTrips.length > 0
+      ? Array.from(new Set(filteredTrips.map((trip) => trip.vehicle_name)))
+      : [];
   const uniqueTransportName =
     filteredTrips.length > 0
       ? Array.from(
           new Set(filteredTrips.map((trip) => trip.transport_information.name))
         )
       : [];
-     console.log(uniqueTransportName);
+  console.log("Rút gọn: ", uniqueTransportName);
+  console.log("Name: ", uniqueVehicleNames);
+
   const handleCancel = () => {
     setSelectedTime(null);
     setShowAllData(true);
     setFilteredTrips([]);
     setPriceRange([0, 3000000]);
-    setSelectedVehicleNames([]);
   };
 
   return (
@@ -156,21 +139,19 @@ export default function Time() {
             filteredTrips.length > 0 ? (
               <div className="garage-list">
                 <ul>
-                  {uniqueTransportName.map((name) => (
-                    <li key={name} className="garage-list-item">
-                      <div>
-                        <p>{name}</p>
-                      </div>
-                      <div className="round">
-                        <input
-                          type="checkbox"
-                          checked={true}
-                          readOnly
-                        />
-                        <label></label>
-                      </div>
-                    </li>
-                  ))}
+                  {uniqueTransportName.map((name, index) => {
+                    return (
+                      <li key={name} className="garage-list-item">
+                        <div>
+                          <p>{name}</p>
+                        </div>
+                        <div className="round">
+                          <input type="checkbox" checked={true} />
+                          <label></label>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ) : (
@@ -186,12 +167,8 @@ export default function Time() {
                         <p>{trip.transport_information.name}</p>
                       </div>
                       <div className="round">
-                        <input
-                          id={`checkbox-${trip.uuid}`}
-                          type="checkbox"
-                          checked={true}
-                        />
-                        <label htmlFor={`checkbox-${trip.uuid}`}></label>
+                        <input type="checkbox" checked={true} />
+                        <label></label>
                       </div>
                     </li>
                   ))
@@ -206,22 +183,38 @@ export default function Time() {
           <h2 className="font-semibold">Loại xe</h2>
         </div>
         <div>
-          {filteredTrips.length > 0 ? (
-            <div className="garage-list">
+          {!showAllData ? (
+            filteredTrips.length > 0 ? (
+              <div className="vertical-list">
+                <ul>
+                  {uniqueVehicleNames.map((name, index) => {
+                    return (
+                      <li key={name} className="garage-list-item">
+                        <div>
+                          <p>{name}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : (
+              <p className="vertical-list">Không có chuyến xe nào.</p>
+            )
+          ) : (
+            <div className="vertical-list">
               <ul>
-                {filteredTrips.map((trip) => (
-                  <li key={trip.uuid} className="category-list-item">
-                    <div>
-                      {selectedGarage.includes(trip.uuid) && (
-                        <p>Phương tiện: {trip.vehicle_name}</p>
-                      )}
-                    </div>
-                  </li>
-                ))}
+                {Object.keys(groupedTrips).map((time) =>
+                  (groupedTrips[time] as Trip[]).flat().map((trip) => (
+                    <li key={trip.uuid} className="garage-list-item">
+                      <div>
+                        <p>{trip.vehicle_name}</p>
+                      </div>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
-          ) : (
-            <p className="garage-list">Không có phòng </p>
           )}
         </div>
       </div>
@@ -230,7 +223,7 @@ export default function Time() {
           Xoá lọc
         </button>
         <button className="button-right">
-          {/* Áp dụng({selectedTrips.length}) */}
+          Áp dụng({filteredTrips.length})
         </button>
       </div>
     </div>
