@@ -22,6 +22,7 @@ export default function Time() {
   const [selectedVehicleNames, setSelectedVehicleNames] = useState<string[]>(
     []
   );
+  const [showAllData, setShowAllData] = useState<boolean>(true);
 
   useEffect(() => {
     if (selectedTime) {
@@ -33,6 +34,7 @@ export default function Time() {
         );
       });
       setFilteredTrips(filteredTripsByPrice);
+      
     }
   }, [selectedTime, priceRange]);
 
@@ -69,8 +71,24 @@ export default function Time() {
     }
   };
 
-  const uniqueVehicleNames = filteredTrips.length > 0 ? Array.from(new Set(filteredTrips.map(trip => trip.vehicle_name))) : [];
-  const uniqueTransportName = filteredTrips.length > 0 ? Array.from(new Set(filteredTrips.map(trip => trip.transport_information.name))) : [];
+  const uniqueVehicleNames =
+    filteredTrips.length > 0
+      ? Array.from(new Set(filteredTrips.map((trip) => trip.vehicle_name)))
+      : [];
+  const uniqueTransportName =
+    filteredTrips.length > 0
+      ? Array.from(
+          new Set(filteredTrips.map((trip) => trip.transport_information.name))
+        )
+      : [];
+
+  const handleCancel = () => {
+    setSelectedTime(null);
+    setFilteredTrips([]);
+    setPriceRange([0, 3000000]);
+    setSelectedTrips([]);
+    setSelectedVehicleNames([]);
+  };
 
   return (
     <div className="">
@@ -78,9 +96,10 @@ export default function Time() {
 
       <div className="grid grid-cols-2">
         <div
-          className="bg-white p-3 m-3 rounded-md"
+          className={`time-option ${selectedTime === "morning" ? "selected" : ""}`}
           onClick={handleFilter}
           data-time="morning"
+          
         >
           <button className="font-normal text-[#a7a7a7]">Sáng sớm</button>
           <p>0:00 - 6:00</p>
@@ -169,13 +188,14 @@ export default function Time() {
             <p className="garage-list">Không có phòng </p>
           )}
         </div>
-
-        <div className="footer-list">
-          <button className="button-left">Xoá lọc</button>
-          <button className="button-right">
-            Áp dụng({selectedTrips.length})
-          </button>
-        </div>
+      </div>
+      <div className="footer-list">
+        <button className="button-left" onClick={handleCancel}>
+          Xoá lọc
+        </button>
+        <button className="button-right">
+          Áp dụng({selectedTrips.length})
+        </button>
       </div>
     </div>
   );

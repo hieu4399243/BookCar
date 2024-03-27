@@ -31,17 +31,26 @@
 .App-link {
   color: #61dafb;
 }
+.time-option{
+  background-color: white;
+  padding: 0.75rem;
+  margin: 0.75rem;
+  border-radius: 0.375rem;
+}
+.selected {
+  border: 2px solid blue;
+}
 
 .garage{
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 .garage-list{
   background-color: white;
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-top: 0.75rem;
-  max-height:400px;
+  max-height:300px;
   overflow-y: auto; 
   scrollbar-width: thin; 
   scrollbar-color: #999 #f0f0f0; 
@@ -107,12 +116,12 @@
 }
 
 .category-car{
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   margin-top: 20px;
 }
 .category-list-item{
-  
+
 }
 
 .footer-list{
@@ -120,18 +129,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
+  margin-top: 10px;
 }
 .button-left {
-  background: white;
+  background: #a5a8ae;
   padding: 15px 50px 15px 50px;
   border-radius: 7px;
   margin-left: 10px;
+  color: black;
 }
 .button-right {
-  background: white;
   padding: 15px 50px 15px 50px;
   border-radius: 7px;
   margin-right: 10px;
+  background-color: #007bff;
+  color: white;
 }
 
 
