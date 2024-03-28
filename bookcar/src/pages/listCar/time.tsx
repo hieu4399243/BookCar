@@ -4,9 +4,7 @@ import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
 import Price from "./price";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
-console.log(groupedTrips);
 const groupedTripsLength: any = data.json.coreData.data;
-console.log(groupedTripsLength.length);
 interface Trip {
   uuid: string;
   discount_amount: number;
