@@ -40,7 +40,7 @@
 }
 
 .selected {
-  border: 2px solid blue;
+  border: 2px solid #0049ef;
 }
 
 .garage {
@@ -170,7 +170,7 @@
   position: absolute;
   right: 20px;
   font-weight: 700;
-  color: blue;
+  color: #0049ef;
 }
 
 .day {
@@ -180,7 +180,7 @@
 }
 
 .selected {
-  background: blue;
+  background: #0049ef;
   color: white;
 }
 
@@ -288,7 +288,7 @@
   top: 57%;
   width: 6px;
   height: 6px;
-  background-color: blue;
+  background-color: #0049ef;
   border-radius: 50%;
   transform: translateY(-50%);
 }
@@ -307,7 +307,7 @@
 }
 
 .line-right {
-  color: blue;
+  color: #0049ef;
   margin-left: 5px;
 }
 
@@ -340,7 +340,7 @@
     border-radius: 5px;
 }
 .text-tranport-note{
-  color: blue;
+  color: #0049ef;
   font-weight: 600;
   font-size: 14px;
 }
@@ -348,25 +348,38 @@
 
 .holes-lower {
 	position: relative;
-	margin:25px;
+  margin: 20px;
 	border:1px dashed #aaa;
 	&:before,
 	&:after {
 		content: '';
-		height: 50px;
-		width: 50px;
-		background-color: black;
-		position: absolute;
-		border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    background-color: #dedede;
+    position: absolute;
+    border-radius: 50%;
 	}
 	
 	&:before {
-		top: -25px;
-		left: 49px
+		top: -16px;
+		left: -50px
 	}
 	&:after {
-		top: -25px;
-		left: 350px
+		top: -16px;
+		right: -50px
 	}
+}
+
+.footer-item-travel{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.continue-button{
+  background: #f3f5fe;
+    border-radius: 5px;
+    padding: 5px;
+    color: #4465f0;
+    font-weight: 600;
 }
 

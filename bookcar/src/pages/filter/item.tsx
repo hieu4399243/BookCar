@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import data from "../../constants/locchuyenxe.json";
 import { formatDuration } from "../../utils/groupTripsByDate";
 import { dateTime } from "../../utils/groupTripsByDate";
 import ic_arrow from "../../assets/images/ic_arrow.svg";
 import ic_heart from "../../assets/images/ic_heart.svg";
 import ic_heart_selected from "../../assets/images/ic_heart_selected.svg";
+import { NumberWithComans } from "../../utils/numberWithComas";
 
 interface Trip {
   uuid: string;
@@ -20,12 +20,14 @@ interface Trip {
     rating: string;
     name: string;
   };
+  discount_amount: string;
 }
 
-const groupedTrips: Trip[] = data.json.coreData.data;
-console.log(groupedTrips);
+interface ItemProps {
+  trips: Trip[];
+}
 
-export default function Item() {
+const Item: React.FC<ItemProps> = ({ trips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
   const changeHeart = (index: number) => {
     if (heartSelected === index) {
@@ -36,7 +38,7 @@ export default function Item() {
   };
   return (
     <div>
-      {groupedTrips.slice(0, 10).map((item, index) => (
+      {trips.slice(0, 10).map((item, index) => (
         <div key={index} className="list-travel">
           <div className="item-travel">
             <div className="header-item-travel">
@@ -97,9 +99,25 @@ export default function Item() {
               </div>
             </div>
             <div className="holes-lower"></div>
+            <div className="footer-item-travel">
+              <div>
+                <p>
+                  Từ{" "}
+                  <span style={{ color: "blue" }}>
+                    {NumberWithComans(item.discount_amount)}đ
+                  </span>
+                </p>
+                <p>Chỉ còn 6 chỗ trống </p>
+              </div>
+              <div>
+                <button className="continue-button">Tiếp tục</button>
+              </div>
+            </div>
           </div>
         </div>
       ))}
     </div>
   );
-}
+};
+
+export default Item;

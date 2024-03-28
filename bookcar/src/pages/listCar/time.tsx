@@ -27,7 +27,6 @@ export default function Time() {
   useEffect(() => {
     if (selectedTime && !showAllData) {
       const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
-      console.log("Chuyến xe đã lọc theo time: ", tripsInSelectedTime);
       const filteredTripsByPrice = tripsInSelectedTime.filter((trip: Trip) => {
         return (
           trip.discount_amount >= priceRange[0] &&
@@ -35,7 +34,6 @@ export default function Time() {
         );
       });
       setFilteredTrips(filteredTripsByPrice);
-      console.log("Lọc theo giá:", filteredTripsByPrice);
     }
   }, [selectedTime, priceRange, showAllData]);
 
@@ -73,10 +71,8 @@ export default function Time() {
           new Set(filteredTrips.map((trip) => trip.transport_information.name))
         )
       : [];
-  console.log("Rút gọn: ", uniqueTransportName);
-  console.log("Name: ", uniqueVehicleNames);
-
   const handleCancel = () => {
+    setClickedOption(null);
     setSelectedTime(null);
     setShowAllData(true);
     setFilteredTrips([]);
