@@ -77,7 +77,7 @@ export default function Filter() {
         </div>
       </div>
 
-      <div className="bg-[#dedede] h-screen">
+      <div className="bg-[#dedede]">
         <Item/>
       </div>
     </div>

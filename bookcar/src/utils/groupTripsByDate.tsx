@@ -23,9 +23,18 @@ export function groupTripsByTimeOfDate(trips: any[]) {
   return groupedTrips;
 }
 
-
-
 function parseTime(timeString: string) {
-  const [hours, minutes] = timeString.split(':').map(Number);
+  const [hours, minutes] = timeString.split(":").map(Number);
   return hours + minutes / 60;
+}
+
+export const formatDuration = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours} hours ${remainingMinutes} minutes`;
+};
+
+export function dateTime(dateString: string) {
+  const convertedDateString = dateString.split("-").join("/");
+  return convertedDateString;
 }

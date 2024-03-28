@@ -126,7 +126,6 @@
   margin-top: 20px;
 }
 
-.category-list-item {}
 
 .footer-list {
   display: flex;
@@ -195,8 +194,8 @@
 }
 
 .filter-button .button {
-  background-color: #d9d9d9;
-  color: white;
+  background-color: #f0f0f0;
+  color: black;
   flex: 1 1;
   border-radius: 5px;
   padding: 5px;
@@ -214,10 +213,160 @@
   padding: 5px;
   margin: 0px 10px 5px 5px;
 }
-.list-travel{
+
+.list-travel {
   padding: 10px;
 }
-.item-travel{
+
+.item-travel {
   background-color: white;
   padding: 10px;
+  border-radius: 5px;
 }
+
+.right-header {
+  display: flex;
+  align-items: center;
+}
+
+.header-item-travel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.body-item-travel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.start-point {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+  font-weight: 600;
+  width: 50%;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.end-point {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+  font-weight: 600;
+  width: 50%;
+  text-align: center;
+  margin-left: 10px;
+}
+
+.path {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  position: relative;
+}
+
+
+.path::before {
+  left: 0;
+}
+
+.path::after {
+  right: 0;
+}
+
+.path::before,
+.path::after {
+  content: '';
+  position: absolute;
+  top: 57%;
+  width: 6px;
+  height: 6px;
+  background-color: blue;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.path::before {
+  left: 0;
+}
+
+.path::after {
+  right: 0;
+}
+
+.line-left {
+  color: #d5d8d9;
+  margin-right: 5px;
+}
+
+.line-right {
+  color: blue;
+  margin-left: 5px;
+}
+
+.body-transport {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 21px;
+}
+
+.rating {
+  display: flex;
+  justify-content: end;
+}
+
+.text-rating {
+  font-size: 20px;
+  font-weight: 500;
+}
+.text-tranport{
+  font-size: 14px;
+}
+.transport-information{
+  display: flex;
+  align-items: center;
+}
+.transport-image{
+  background: #f0f0f0;
+    padding: 5px;
+    border-radius: 5px;
+}
+.text-tranport-note{
+  color: blue;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+
+.holes-lower {
+	position: relative;
+	margin:25px;
+	border:1px dashed #aaa;
+	&:before,
+	&:after {
+		content: '';
+		height: 50px;
+		width: 50px;
+		background-color: black;
+		position: absolute;
+		border-radius: 50%;
+	}
+	
+	&:before {
+		top: -25px;
+		left: 49px
+	}
+	&:after {
+		top: -25px;
+		left: 350px
+	}
+}
+
