@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ic_back from "../../assets/images/ic_back.svg";
-import Slider from "react-slick";
-import { format, addDays, isToday } from "date-fns";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import ic_filter_white from "../../assets/images/ic_filter_white.svg";
 import Item from "./item";
 import data from "../../constants/locchuyenxe.json";
+import Slider from "./slider";
 
 interface Trip {
   uuid: string;
@@ -29,31 +26,11 @@ interface Trip {
 const groupedTrips: Trip[] = data.json.coreData.data;
 
 export default function Filter() {
-  const weekdays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-
-  const generateTimeSlots = () => {
-    const currentDate = new Date();
-    const timeSlots = [];
-    for (let i = 0; i < 30; i++) {
-      const nextDate = addDays(currentDate, i);
-      timeSlots.push(nextDate);
-    }
-    return timeSlots;
-  };
-
   const [selectedDateIndex, setSelectedDateIndex] = useState<null | number>(
     null
   );
   const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTrips);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 200,
-    slidesToShow: 7,
-    slidesToScroll: 1,
-  };
 
   const handleDateClick = (index: number) => {
     setSelectedDateIndex(index === selectedDateIndex ? null : index);
@@ -119,6 +96,10 @@ export default function Filter() {
     }
   };
 
+  const handCancle = () =>{
+    setSelectedFilters([]);
+  }
+
   return (
     <div>
       <div className="flex p-5 bg-white items-center">
@@ -132,22 +113,11 @@ export default function Filter() {
           <h2 className="sub-title">Long Biên - An Lão</h2>
         </div>
         <div className="cancle-filter">
-          <h2>Xoá lọc</h2>
+          <h2 onClick={() => handCancle()}>Xoá lọc</h2>
         </div>
       </div>
       <div>
-        <Slider {...settings}>
-          {generateTimeSlots().map((timeSlot, index) => (
-            <div
-              key={index}
-              className={`day ${index === selectedDateIndex ? "selected" : ""}`}
-              onClick={() => handleDateClick(index)}
-            >
-              <h2 className="name-day">{weekdays[timeSlot.getDay()]}</h2>
-              <h3 className="name-date">{format(timeSlot, "dd/MM")}</h3>
-            </div>
-          ))}
-        </Slider>
+        <Slider/>
       </div>
       <div className="filter-button">
         <button
