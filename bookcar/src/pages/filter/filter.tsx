@@ -5,6 +5,9 @@ import ic_filter_white from "../../assets/images/ic_filter_white.svg";
 import Item from "./item";
 import data from "../../constants/locchuyenxe.json";
 import Slider from "./slider";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+
 
 interface Trip {
   uuid: string;
@@ -31,6 +34,8 @@ export default function Filter() {
   );
   const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTrips);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [isClickedSort, setIsClickedSort] = useState(false);
+
 
   const handleDateClick = (index: number) => {
     setSelectedDateIndex(index === selectedDateIndex ? null : index);
@@ -88,12 +93,13 @@ export default function Filter() {
     setFilteredTrips(sortedTrips);
   };
 
-  const handleSelectFilter = (filter: string) => {
-    if (selectedFilters.includes(filter)) {
-      setSelectedFilters(selectedFilters.filter((f) => f !== filter));
-    } else {
+  const handleSelectFilter = (filter:string) => {
+    if (!selectedFilters.includes(filter)) {
       setSelectedFilters([...selectedFilters, filter]);
+    } else {
+      setSelectedFilters(selectedFilters.filter(f => f !== filter));
     }
+    setIsClickedSort(true);
   };
 
   const handCancle = () =>{
@@ -121,39 +127,39 @@ export default function Filter() {
       </div>
       <div className="filter-button">
         <button
-          className={`button ${
-            selectedFilters.includes("departure_time") ? "selected" : ""
+          className={`${
+            selectedFilters.includes("departure_time") ? "selected-filter" : "button"
           }`}
           onClick={() => handleSelectFilter("departure_time")}
         >
-          Giờ chạy
+          Giờ chạy {isClickedSort && <FontAwesomeIcon icon={faArrowUp} />}
         </button>
 
         <button
-          className={`button ${
-            selectedFilters.includes("discount_amount") ? "selected" : ""
+          className={`${
+            selectedFilters.includes("discount_amount") ? "selected-filter" : "button"
           }`}
           onClick={() => handleSelectFilter("discount_amount")}
         >
-          Giá vé
+          Giá vé {isClickedSort && <FontAwesomeIcon icon={faArrowUp} />}
         </button>
 
         <button
-          className={`button ${
-            selectedFilters.includes("rating") ? "selected" : ""
+          className={`${
+            selectedFilters.includes("rating") ? "selected-filter" : "button"
           }`}
           onClick={() => handleSelectFilter("rating")}
         >
-          Đánh giá
+          Đánh giá {isClickedSort && <FontAwesomeIcon icon={faArrowUp} />}
         </button>
 
-        <div className="filter-icon">
-          <button onClick={handleFilter}>Lọc</button>
+        <Link className="filter-icon" to={'/list'}>
+          <button>Lọc</button>
           <img src={ic_filter_white} />
-        </div>
+        </Link>
       </div>
 
-      <div className="bg-[#dedede]">
+      <div className="main-list">
         <Item trips={filteredTrips}/>
       </div>
     </div>

@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 
 export default function Slider() {
-  const [startIndex, setStartIndex] = useState(0); 
+  const [startIndex, setStartIndex] = useState(0);
   const [offset, setOffset] = useState(0);
   const [selectedDate, setSelected] = useState(0);
 
-  const sliderRef = useRef<HTMLDivElement>(null); 
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     setStartIndex(event.touches[0].clientX);
@@ -16,54 +16,180 @@ export default function Slider() {
   };
 
   const handleTouchEnd = () => {
-    const threshold = 100; 
+    const threshold = 100;
     if (offset > threshold) {
       prevSlide();
     } else if (offset < -threshold) {
       nextSlide();
     }
-    setOffset(0); 
+    setOffset(0);
   };
 
   const nextSlide = () => {
-    console.log('Next slide');
+    console.log("Next slide");
   };
 
   const prevSlide = () => {
-    console.log('Previous slide');
+    console.log("Previous slide");
   };
 
-  const handleClick = (index:number) =>{
+  const handleClick = (index: number) => {
     setSelected(index);
-  }
-  
+  };
 
   return (
-    <div 
-      className="slider-container" 
+    <div
+      className="slider-container"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <div className="slider" ref={sliderRef}>
         <ul style={{ transform: `translateX(${offset}px)` }}>
-        <li onClick={() => handleClick(0)} className={selectedDate === 0 ? 'selectedDate' : ''}>T5 <br/> 28/03</li>
-          <li onClick={() => handleClick(1)} className={selectedDate === 1 ? 'selectedDate' : ''}>T6 <br/> 29/03</li>
-          <li onClick={() => handleClick(2)} className={selectedDate === 2 ? 'selectedDate' : ''}>T7 <br/> 30/03</li>
-          <li onClick={() => handleClick(3)} className={selectedDate === 3 ? 'selectedDate' : ''}>CN <br/> 31/03</li>
-          <li onClick={() => handleClick(4)} className={selectedDate === 4 ? 'selectedDate' : ''}>T2 <br/> 01/04</li>
-          <li onClick={() => handleClick(5)} className={selectedDate === 5 ? 'selectedDate' : ''}>T3 <br/> 02/04</li>
-          <li onClick={() => handleClick(6)} className={selectedDate === 6 ? 'selectedDate' : ''}>T4 <br/> 03/04</li>
-          <li onClick={() => handleClick(7)} className={selectedDate === 7 ? 'selectedDate' : ''}>T5 <br/> 04/04</li>
-          <li onClick={() => handleClick(8)} className={selectedDate === 8 ? 'selectedDate' : ''}>T6 <br/> 05/04</li>
-          <li onClick={() => handleClick(9)} className={selectedDate === 9 ? 'selectedDate' : ''}>T7 <br/> 06/04</li>
-          <li onClick={() => handleClick(10)} className={selectedDate === 10 ? 'selectedDate' : ''}>CN <br/> 07/04</li>
-          <li onClick={() => handleClick(11)} className={selectedDate === 11 ? 'selectedDate' : ''}>T2 <br/> 08/04</li>
-          <li onClick={() => handleClick(12)} className={selectedDate === 12 ? 'selectedDate' : ''}>T3 <br/> 09/04</li>
-          <li onClick={() => handleClick(13)} className={selectedDate === 13 ? 'selectedDate' : ''}>T4 <br/> 10/04</li>
-          <li onClick={() => handleClick(14)} className={selectedDate === 14 ? 'selectedDate' : ''}>T5 <br/> 11/04</li>
-          <li onClick={() => handleClick(15)} className={selectedDate === 15 ? 'selectedDate' : ''}>T6 <br/> 12/04</li>
-
+          <li>
+            <div
+              onClick={() => handleClick(0)}
+              className={selectedDate === 0 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T5</p>
+              <p className={`${selectedDate === 0 ? "selected-days_n" : "days_n"}`}>28/3</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(1)}
+              className={selectedDate === 1 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T6</p>
+              <p className={`${selectedDate === 1 ? "selected-days_n" : "days_n "}`}>29/3</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(2)}
+              className={selectedDate === 2 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T7</p>
+              <p className={`${selectedDate === 2 ? "selected-days_n" : "days_n "}`}>30/3</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(3)}
+              className={selectedDate === 3 ? "selectedDate" : ""}
+            >
+              <p className="days_t">CN</p>
+              <p className={`${selectedDate === 3 ? "selected-days_n" : "days_n "}`}>31/3</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(4)}
+              className={selectedDate === 4 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T2</p>
+              <p className={` ${selectedDate === 4 ? "selected-days_n" : "days_n "}`}>1/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(5)}
+              className={selectedDate === 5 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T3</p>
+              <p className={`${selectedDate === 5 ? "selected-days_n" : "days_n"}`}>2/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(6)}
+              className={selectedDate === 6 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T4</p>
+              <p className={`${selectedDate === 6 ? "selected-days_n" : "days_n"}`}>3/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(7)}
+              className={selectedDate === 7 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T5</p>
+              <p className={`${selectedDate === 7 ? "selected-days_n" : "days_n"}`}>4/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(8)}
+              className={selectedDate === 8 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T6</p>
+              <p className={`${selectedDate === 8 ? "selected-days_n" : "days_n"}`}>5/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(9)}
+              className={selectedDate === 9 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T7</p>
+              <p className={`${selectedDate === 9 ? "selected-days_n" : "days_n"}`}>6/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(10)}
+              className={selectedDate === 10 ? "selectedDate" : ""}
+            >
+              <p className="days_t">CN</p>
+              <p className={`${selectedDate === 10 ? "selected-days_n" : "days_n"}`}>7/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(11)}
+              className={selectedDate === 11 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T2</p>
+              <p className={`${selectedDate === 11 ? "selected-days_n" : "days_n"}`}>8/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(12)}
+              className={selectedDate === 12 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T3</p>
+              <p className={`${selectedDate === 12 ? "selected-days_n" : "days_n"}`}>9/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(13)}
+              className={selectedDate === 13 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T4</p>
+              <p className={`${selectedDate === 13 ? "selected-days_n" : "days_n"}`}>10/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(14)}
+              className={selectedDate === 14 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T5</p>
+              <p className={`${selectedDate === 14 ? "selected-days_n" : "days_n"}`}>11/4</p>
+            </div>
+          </li>
+          <li>
+            <div
+              onClick={() => handleClick(15)}
+              className={selectedDate === 15 ? "selectedDate" : ""}
+            >
+              <p className="days_t">T6</p>
+              <p className={`${selectedDate === 15 ? "selected-days_n" : "days_n"}`}>12/4</p>
+            </div>
+          </li>
         </ul>
       </div>
     </div>

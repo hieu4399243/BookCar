@@ -5,6 +5,8 @@ import ic_arrow from "../../assets/images/ic_arrow.svg";
 import ic_heart from "../../assets/images/ic_heart.svg";
 import ic_heart_selected from "../../assets/images/ic_heart_selected.svg";
 import { NumberWithComans } from "../../utils/numberWithComas";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 interface Trip {
   uuid: string;
@@ -49,16 +51,16 @@ const Item: React.FC<ItemProps> = ({ trips }) => {
                 </p>
               </div>
               <div>
-                <p style={{ color: "#b6b0b0" }}>
+                <p className="time-range">
                   {formatDuration(item.duration_in_min)}
-                </p>
+                </p> 
               </div>
             </div>
             <div className="body-item-travel">
               <p className="start-point">{item.merchant_start_point_name}</p>
               <div className="path">
                 <p className="line-left">----</p>
-                <img src={ic_arrow} />
+                <img src={ic_arrow} className="img-arrow"/>
                 <p className="line-right">----</p>
               </div>
               <p className="end-point">{item.merchant_end_point_name}</p>
@@ -69,8 +71,7 @@ const Item: React.FC<ItemProps> = ({ trips }) => {
                   <img
                     src={item.transport_information.image_url}
                     alt="Transport Image"
-                    width={40}
-                    height={60}
+                    className="img-transport"
                   />
                 </div>
                 <div style={{ marginLeft: "5px" }}>
@@ -82,13 +83,16 @@ const Item: React.FC<ItemProps> = ({ trips }) => {
               </div>
               <div>
                 <div className="rating">
+                  <FontAwesomeIcon icon={faStar} style={{color: "#f9b533"}}/>
                   <p className="text-rating">
                     {item.transport_information.rating}
                   </p>
                   <div onClick={() => changeHeart(index)}>
                     <img
+                    className="heart-rating"
                       src={
                         heartSelected === index ? ic_heart_selected : ic_heart
+                      
                       }
                     />
                   </div>
@@ -103,7 +107,7 @@ const Item: React.FC<ItemProps> = ({ trips }) => {
               <div>
                 <p>
                   Từ{" "}
-                  <span style={{ color: "blue" }}>
+                  <span className="ammount-trip">
                     {NumberWithComans(item.discount_amount)}đ
                   </span>
                 </p>
