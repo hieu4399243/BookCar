@@ -13,7 +13,7 @@ export default function List() {
         </Link>
         <h1 className="font-bold text-xl">Lọc chuyến xe</h1>
       </div>
-      <div className="bg-[#dedede] h-screen">
+      <div className="bg-[#dedede]">
         <Time />
       </div>
     </div>

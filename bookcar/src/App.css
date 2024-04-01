@@ -139,14 +139,12 @@
   background: #a5a8ae;
   padding: 15px 50px 15px 50px;
   border-radius: 7px;
-  margin-left: 10px;
   color: black;
 }
 
 .button-right {
   padding: 15px 50px 15px 50px;
   border-radius: 7px;
-  margin-right: 10px;
   background-color: #007bff;
   color: white;
 }
