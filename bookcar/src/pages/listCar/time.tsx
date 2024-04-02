@@ -4,8 +4,11 @@ import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
 import Price from "./price";
 import ic_select from "../../assets/images/ic_select.svg";
 import ic_selected from "../../assets/images/ic_selected.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
+
 const groupedTripsLength: any = data.json.coreData.data;
 interface Trip {
   uuid: string;
@@ -90,6 +93,66 @@ export default function Time() {
           new Set(filteredTrips.map((trip) => trip.transport_information.name))
         )
       : [];
+
+  const getAllGarage = () => {
+    let count = 0;
+    return (
+      <div>
+        {Object.keys(groupedTrips).map((time) =>
+          (groupedTrips[time] as Trip[]).flat().map((trip) => {
+            if (count < 3) {
+              count++;
+              return (
+                <li key={trip.uuid} className="garage-list-item">
+                  <div className="item-list-car">
+                    <div className="item-car">
+                      <FontAwesomeIcon icon={faBusSimple} />
+                    </div>
+                    <p>{trip.transport_information.name}</p>
+                  </div>
+                  <div>
+                    <img src={ic_select} />
+                  </div>
+                </li>
+              );
+            } else {
+              return null;
+            }
+          })
+        )}
+      </div>
+    );
+  };
+
+  const getAllCategory = () => {
+    let count = 0;
+    return (
+      <div>
+        {Object.keys(groupedTrips).map((time) =>
+          (groupedTrips[time] as Trip[]).flat().map((trip) => {
+            if (count < 3) {
+              count++; 
+              return (
+                <li key={trip.uuid} className="garage-list-item">
+                  <div className="item-list-car">
+                    <div className="item-car">
+                      <FontAwesomeIcon icon={faBusSimple} />
+                    </div>
+                    <p>{trip.vehicle_name}</p>
+                  </div>
+                  <div>
+                    <img src={ic_select} />
+                  </div>
+                </li>
+              );
+            } else {
+              return null;
+            }
+          })
+        )}
+      </div>
+    );
+  };
   const handleCancel = () => {
     setClickedOption(null);
     setSelectedTime(null);
@@ -103,7 +166,7 @@ export default function Time() {
       <div>
         <h2 className="px-5 pt-5 font-semibold">Thời gian khởi hành</h2>
 
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 main-grid">
           <div
             className={`time-option ${
               clickedOption === "morning" ? "selected" : ""
@@ -150,7 +213,7 @@ export default function Time() {
 
         <div className="garage">
           <div>
-            <h2 className="font-semibold">Nhà xe</h2>
+            <h2 className="font-semibold mb-3">Nhà xe</h2>
           </div>
           <div>
             {!showAllData ? (
@@ -160,7 +223,10 @@ export default function Time() {
                     {uniqueTransportName.map((name, index) => {
                       return (
                         <li key={name} className="garage-list-item">
-                          <div>
+                          <div className="item-list-car">
+                            <div className="item-car">
+                              <FontAwesomeIcon icon={faBusSimple} />
+                            </div>
                             <p>{name}</p>
                           </div>
                           <div>
@@ -175,28 +241,15 @@ export default function Time() {
                 <p className="garage-list">Không có chuyến xe nào.</p>
               )
             ) : (
-              <div className="garage-list">
-                <ul>
-                  {Object.keys(groupedTrips).map((time) =>
-                    (groupedTrips[time] as Trip[]).flat().map((trip) => (
-                      <li key={trip.uuid} className="garage-list-item">
-                        <div>
-                          <p>{trip.transport_information.name}</p>
-                        </div>
-                        <div>
-                          <img src={ic_select} />
-                        </div>
-                      </li>
-                    ))
-                  )}
-                </ul>
+              <div className="list-start">
+                <ul>{getAllGarage()}</ul>
               </div>
             )}
           </div>
         </div>
         <div className="category-car">
           <div>
-            <h2 className="font-semibold">Loại xe</h2>
+            <h2 className="font-semibold mb-3">Loại xe</h2>
           </div>
           <div>
             {!showAllData ? (
@@ -206,7 +259,10 @@ export default function Time() {
                     {uniqueVehicleNames.map((name, index) => {
                       return (
                         <li key={name} className="garage-list-item">
-                          <div>
+                          <div className="item-list-car">
+                            <div className="item-car">
+                              <FontAwesomeIcon icon={faBusSimple} />
+                            </div>
                             <p>{name}</p>
                           </div>
                           <div>
@@ -228,20 +284,9 @@ export default function Time() {
                 <p className="vertical-list">Không có chuyến xe nào.</p>
               )
             ) : (
-              <div className="vertical-list">
+              <div className="list-start">
                 <ul>
-                  {Object.keys(groupedTrips).map((time) =>
-                    (groupedTrips[time] as Trip[]).flat().map((trip) => (
-                      <li key={trip.uuid} className="garage-list-item">
-                        <div>
-                          <p>{trip.vehicle_name}</p>
-                        </div>
-                        <div>
-                          <img src={ic_select} />
-                        </div>
-                      </li>
-                    ))
-                  )}
+                  {getAllCategory()}
                 </ul>
               </div>
             )}

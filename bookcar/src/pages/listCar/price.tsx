@@ -10,11 +10,11 @@ interface PriceProps {
 const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
   return (
     <div>
-      <div className="flex justify-between text-center items-center px-5">
+      <div className="flex justify-between text-center items-center px-5 mt-5">
         <h2 className="font-semibold">Khoảng giá</h2>
         <h2>0 - 3.000.000đ/vé</h2>
       </div>
-      <div className="bg-white p-3 m-3 rounded-md pt-6">
+      <div className="range">
         <Range
           step={1}
           min={0}
