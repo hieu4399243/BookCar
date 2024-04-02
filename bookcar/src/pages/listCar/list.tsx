@@ -7,7 +7,7 @@ import { Route, Link, Routes } from "react-router-dom";
 export default function List() {
   return (
     <div>
-      <div className="flex p-5 bg-white">
+      <div className="flex bg-white header-filter">
         <Link to={"/"}>
           <img src={ic_close} />
         </Link>

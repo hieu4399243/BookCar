@@ -52,13 +52,13 @@ export default function Time() {
       setClickedOption(time === clickedOption ? null : time);
       const tripsInSelectedTime = (groupedTrips[time] as Trip[]).flat();
       setFilteredTrips(tripsInSelectedTime);
-      let minPrice = Number.POSITIVE_INFINITY;
-      let maxPrice = Number.NEGATIVE_INFINITY;
-      tripsInSelectedTime.forEach((trip) => {
-        minPrice = Math.min(minPrice, trip.discount_amount);
-        maxPrice = Math.max(maxPrice, trip.discount_amount);
-      });
-      setPriceRange([minPrice, maxPrice]);
+      // let minPrice = Number.POSITIVE_INFINITY;
+      // let maxPrice = Number.NEGATIVE_INFINITY;
+      // tripsInSelectedTime.forEach((trip) => {
+      //   minPrice = Math.min(minPrice, trip.discount_amount);
+      //   maxPrice = Math.max(maxPrice, trip.discount_amount);
+      // });
+      // setPriceRange([minPrice, maxPrice]);
     } else {
       setSelectedTime(null);
       setShowAllData(true);
