@@ -30,6 +30,7 @@ export default function Time() {
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string | null>(
     null
   );
+  const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
 
   useEffect(() => {
     if (selectedTime && !showAllData) {
@@ -81,6 +82,24 @@ export default function Time() {
         (trip: Trip) => trip.vehicle_name === name
       );
       setFilteredTrips(filteredTripsByVehicle);
+    }
+  };
+
+  const handleCheckBoxByGarage = (name: string) => {
+    const updatedGarageCheckboxes = [...garageCheckboxes];
+    const index = updatedGarageCheckboxes.indexOf(name);
+    if (index > -1) {
+      updatedGarageCheckboxes.splice(index, 1);
+    } else {
+      updatedGarageCheckboxes.push(name);
+    }
+    setGarageCheckboxes(updatedGarageCheckboxes);
+    if (selectedTime) {
+      const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
+      const filteredTripsByGarage = tripsInSelectedTime.filter((trip: Trip) =>
+        updatedGarageCheckboxes.includes(trip.transport_information.name)
+      );
+      setFilteredTrips(filteredTripsByGarage);
     }
   };
 
@@ -237,7 +256,15 @@ export default function Time() {
                             <p>{name}</p>
                           </div>
                           <div>
-                            <img src={ic_select} />
+                            <img
+                              src={
+                                garageCheckboxes.includes(name)
+                                  ? ic_selected
+                                  : ic_select
+                              }
+                              onClick={() => handleCheckBoxByGarage(name)}
+                            
+                            />
                           </div>
                         </li>
                       );
