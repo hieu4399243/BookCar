@@ -95,10 +95,6 @@
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-top: 0.75rem;
-  max-height: 150px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #999 #f0f0f0;
 }
 
 .garage-list-item {
@@ -213,10 +209,6 @@
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-top: 0.75rem;
-  max-height: 150px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #999 #f0f0f0;
 }
 
 .sub-title {

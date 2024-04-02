@@ -15,6 +15,7 @@ interface Trip {
   discount_amount: number;
   transport_information: {
     name: string;
+    image_url: string;
   };
   vehicle_name: string;
 }
@@ -106,7 +107,13 @@ export default function Time() {
                 <li key={trip.uuid} className="garage-list-item">
                   <div className="item-list-car">
                     <div className="item-car">
-                      <FontAwesomeIcon icon={faBusSimple} />
+                      <div className="transport-image">
+                        <img
+                          src={trip.transport_information.image_url}
+                          alt="Transport Image"
+                          className="img-transport"
+                        />
+                      </div>
                     </div>
                     <p>{trip.transport_information.name}</p>
                   </div>
@@ -131,7 +138,7 @@ export default function Time() {
         {Object.keys(groupedTrips).map((time) =>
           (groupedTrips[time] as Trip[]).flat().map((trip) => {
             if (count < 3) {
-              count++; 
+              count++;
               return (
                 <li key={trip.uuid} className="garage-list-item">
                   <div className="item-list-car">
@@ -230,7 +237,7 @@ export default function Time() {
                             <p>{name}</p>
                           </div>
                           <div>
-                            <img src={ic_selected} />
+                            <img src={ic_select} />
                           </div>
                         </li>
                       );
@@ -285,9 +292,7 @@ export default function Time() {
               )
             ) : (
               <div className="list-start">
-                <ul>
-                  {getAllCategory()}
-                </ul>
+                <ul>{getAllCategory()}</ul>
               </div>
             )}
           </div>
