@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 
 export default function Slider() {
-  const [startIndex, setStartIndex] = useState(0);
+  const [startIndex, setStartIndex] = useState(5);
   const [offset, setOffset] = useState(0);
-  const [selectedDate, setSelected] = useState(0);
+  const [selectedDate, setSelected] = useState(3);
 
   const sliderRef = useRef<HTMLDivElement>(null);
 

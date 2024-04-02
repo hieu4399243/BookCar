@@ -169,7 +169,7 @@ export default function Time() {
         <div className="grid grid-cols-2 main-grid">
           <div
             className={`time-option ${
-              clickedOption === "morning" ? "selected" : ""
+              clickedOption === "morning" ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="morning"
@@ -179,7 +179,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "noon" ? "selected" : ""
+              clickedOption === "noon" ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="noon"
@@ -189,7 +189,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "afternoon" ? "selected" : ""
+              clickedOption === "afternoon" ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="afternoon"
@@ -199,7 +199,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "evening" ? "selected" : ""
+              clickedOption === "evening" ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="evening"
