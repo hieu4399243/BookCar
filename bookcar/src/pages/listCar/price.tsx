@@ -61,8 +61,8 @@ const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
           )}
         />
         <div className="flex justify-between text-center items-center mt-4">
-          <div>{NumberWithComans(priceRange[0].toFixed(0))}đ</div>
-          <div>{NumberWithComans(priceRange[1].toFixed(0))}đ</div>
+          <div>{NumberWithComans(priceRange[0])}đ</div>
+          <div>{NumberWithComans(priceRange[1])}đ</div>
         </div>
       </div>
     </div>

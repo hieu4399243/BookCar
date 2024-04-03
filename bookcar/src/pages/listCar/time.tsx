@@ -6,21 +6,32 @@ import ic_select from "../../assets/images/ic_select.svg";
 import ic_selected from "../../assets/images/ic_selected.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
+import Item from "../filter/item";
+import Filter from "../filter/filter";
+import { useNavigate } from 'react-router-dom';
+
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
-
 const groupedTripsLength: any = data.json.coreData.data;
 interface Trip {
   uuid: string;
-  discount_amount: number;
-  transport_information: {
-    name: string;
-    image_url: string;
-  };
+  name: string;
+  departure_time: string;
+  pick_up_date: string;
   vehicle_name: string;
+  duration_in_min: number;
+  merchant_start_point_name: string;
+  merchant_end_point_name: string;
+  transport_information: {
+    image_url: string;
+    rating: string;
+    name: string;
+  };
+  discount_amount: number;
 }
 
 export default function Time() {
+  const navigate = useNavigate();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [filteredTrips, setFilteredTrips] =
     useState<Trip[]>(groupedTripsLength);
@@ -32,18 +43,47 @@ export default function Time() {
   );
   const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
 
+  const allTransportNames = Array.from(
+    new Set(
+      data.json.coreData.data.map(
+        (trip: Trip) => trip.transport_information.name
+      )
+    )
+  );
+  const allVehicleNames = Array.from(
+    new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
+  );
+  const displayedTransportNames = !showAllData
+    ? Array.from(
+        new Set(
+          filteredTrips.map((trip: Trip) => trip.transport_information.name)
+        )
+      )
+    : allTransportNames;
+
+
+  const displayedVehicleNames = !showAllData
+    ? Array.from(new Set(filteredTrips.map((trip: Trip) => trip.vehicle_name)))
+    : allVehicleNames;
+
+
   useEffect(() => {
-    if (selectedTime && !showAllData) {
-      const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
-      const filteredTripsByPrice = tripsInSelectedTime.filter((trip: Trip) => {
-        return (
-          trip.discount_amount >= priceRange[0] &&
-          trip.discount_amount <= priceRange[1]
-        );
-      });
-      setFilteredTrips(filteredTripsByPrice);
-    }
-  }, [selectedTime, priceRange, showAllData]);
+    let currentFilteredTrips = selectedTime
+      ? groupedTrips[selectedTime] || []
+      : data.json.coreData.data;
+
+    currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
+      return (
+        trip.discount_amount >= priceRange[0] &&
+        trip.discount_amount <= priceRange[1] &&
+        (!vehicleCheckboxes || trip.vehicle_name === vehicleCheckboxes) &&
+        (garageCheckboxes.length === 0 ||
+          garageCheckboxes.includes(trip.transport_information.name))
+      );
+    });
+
+    setFilteredTrips(currentFilteredTrips);
+  }, [selectedTime, priceRange, garageCheckboxes, vehicleCheckboxes]);
 
   const handleFilter: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const time = event.currentTarget.getAttribute("data-time");
@@ -53,13 +93,6 @@ export default function Time() {
       setClickedOption(time === clickedOption ? null : time);
       const tripsInSelectedTime = (groupedTrips[time] as Trip[]).flat();
       setFilteredTrips(tripsInSelectedTime);
-      // let minPrice = Number.POSITIVE_INFINITY;
-      // let maxPrice = Number.NEGATIVE_INFINITY;
-      // tripsInSelectedTime.forEach((trip) => {
-      //   minPrice = Math.min(minPrice, trip.discount_amount);
-      //   maxPrice = Math.max(maxPrice, trip.discount_amount);
-      // });
-      // setPriceRange([minPrice, maxPrice]);
     } else {
       setSelectedTime(null);
       setShowAllData(true);
@@ -86,33 +119,28 @@ export default function Time() {
   };
 
   const handleCheckBoxByGarage = (name: string) => {
-    const updatedGarageCheckboxes = [...garageCheckboxes];
-    const index = updatedGarageCheckboxes.indexOf(name);
-    if (index > -1) {
-      updatedGarageCheckboxes.splice(index, 1);
+    let updatedGarageCheckboxes: string[];
+    if (garageCheckboxes.includes(name)) {
+      updatedGarageCheckboxes = garageCheckboxes.filter(
+        (checkbox) => checkbox !== name
+      );
+      console.log(updatedGarageCheckboxes);
     } else {
-      updatedGarageCheckboxes.push(name);
+      updatedGarageCheckboxes = [...garageCheckboxes, name];
+      console.log(updatedGarageCheckboxes);
     }
     setGarageCheckboxes(updatedGarageCheckboxes);
-    if (selectedTime) {
-      const tripsInSelectedTime = (groupedTrips[selectedTime] as Trip[]).flat();
-      const filteredTripsByGarage = tripsInSelectedTime.filter((trip: Trip) =>
+
+    let filtered;
+    if (updatedGarageCheckboxes.length > 0) {
+      filtered = groupedTripsLength.filter((trip: Trip) =>
         updatedGarageCheckboxes.includes(trip.transport_information.name)
       );
-      setFilteredTrips(filteredTripsByGarage);
+    } else {
+      filtered = groupedTripsLength;
     }
+    setFilteredTrips(filtered);
   };
-
-  const uniqueVehicleNames =
-    filteredTrips.length > 0
-      ? Array.from(new Set(filteredTrips.map((trip) => trip.vehicle_name)))
-      : [];
-  const uniqueTransportName =
-    filteredTrips.length > 0
-      ? Array.from(
-          new Set(filteredTrips.map((trip) => trip.transport_information.name))
-        )
-      : [];
 
   const getAllGarage = () => {
     let count = 0;
@@ -179,12 +207,19 @@ export default function Time() {
       </div>
     );
   };
+
   const handleCancel = () => {
     setClickedOption(null);
     setSelectedTime(null);
     setShowAllData(true);
-    setFilteredTrips([]);
+    setFilteredTrips(groupedTripsLength);
     setPriceRange([0, 3000000]);
+    setVehicleCheckboxes(null);
+    setGarageCheckboxes([]);
+  };
+
+  const applyFilters = () => {
+    navigate('/filter', { state: { filteredTrips } });
   };
 
   return (
@@ -246,7 +281,7 @@ export default function Time() {
               filteredTrips.length > 0 ? (
                 <div className="garage-list">
                   <ul>
-                    {uniqueTransportName.map((name, index) => {
+                    {allTransportNames.map((name, index) => {
                       return (
                         <li key={name} className="garage-list-item">
                           <div className="item-list-car">
@@ -263,7 +298,6 @@ export default function Time() {
                                   : ic_select
                               }
                               onClick={() => handleCheckBoxByGarage(name)}
-                            
                             />
                           </div>
                         </li>
@@ -290,7 +324,7 @@ export default function Time() {
               filteredTrips.length > 0 ? (
                 <div className="vertical-list">
                   <ul>
-                    {uniqueVehicleNames.map((name, index) => {
+                    {allVehicleNames.map((name, index) => {
                       return (
                         <li key={name} className="garage-list-item">
                           <div className="item-list-car">
@@ -328,7 +362,7 @@ export default function Time() {
           <button className="button-left" onClick={handleCancel}>
             Xoá lọc
           </button>
-          <button className="button-right">
+          <button className="button-right" onClick={applyFilters}>
             Áp dụng({filteredTrips.length})
           </button>
         </div>

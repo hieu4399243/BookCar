@@ -22,14 +22,14 @@ interface Trip {
     rating: string;
     name: string;
   };
-  discount_amount: string;
+  discount_amount: number;
 }
 
 interface ItemProps {
-  trips: Trip[];
+  filteredTrips: Trip[];
 }
 
-const Item: React.FC<ItemProps> = ({ trips }) => {
+const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
   const changeHeart = (index: number) => {
     if (heartSelected === index) {
@@ -40,7 +40,7 @@ const Item: React.FC<ItemProps> = ({ trips }) => {
   };
   return (
     <div>
-      {trips.slice(0, 10).map((item, index) => (
+      {filteredTrips.slice(0, 10).map((item, index) => (
         <div key={index} className="list-travel">
           <div className="item-travel">
             <div className="header-item-travel">

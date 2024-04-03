@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import ic_back from "../../assets/images/ic_back.svg";
 import ic_filter_white from "../../assets/images/ic_filter_white.svg";
 import Item from "./item";
-import data from "../../constants/locchuyenxe.json";
 import Slider from "./slider";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
 
 
 interface Trip {
@@ -23,18 +23,20 @@ interface Trip {
     rating: string;
     name: string;
   };
-  discount_amount: string;
+  discount_amount: number;
 }
 
-const groupedTrips: Trip[] = data.json.coreData.data;
+interface ItemProps {
+  filteredTrips: Trip[];
+}
 
-export default function Filter() {
+const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
+  const location = useLocation();
+  const stateFilteredTrips: Trip[] | undefined = location.state?.filteredTrips;
   const [selectedDateIndex, setSelectedDateIndex] = useState<null | number>(
     null
   );
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTrips);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [isClickedSort, setIsClickedSort] = useState(false);
+  const [filtered, setFiltered] = useState<Trip[]>(stateFilteredTrips || []);
 
 
   const handleDateClick = (index: number) => {
@@ -51,11 +53,11 @@ export default function Filter() {
     });
   };
 
-  const sortByDiscountAmount = (trips: Trip[]) => {
-    return [...trips].sort((a: Trip, b: Trip) => {
-      return parseInt(a.discount_amount) - parseInt(b.discount_amount);
-    });
-  };
+  // const sortByDiscountAmount = (trips: Trip[]) => {
+  //   return [...trips].sort((a: Trip, b: Trip) => {
+  //     return parseInt(a.discount_amount) - parseInt(b.discount_amount);
+  //   });
+  // };
 
   const sortRating = (trips: Trip[]) => {
     return [...trips].sort((a, b) => {
@@ -66,45 +68,20 @@ export default function Filter() {
     });
   };
 
-  const handleFilter = () => {
-    selectedFilters.forEach((filter) => {
-      if (filter === "departure_time") {
-        sortByDepartureTime();
-      } else if (filter === "discount_amount") {
-        sortByTicketPrice();
-      } else if (filter === "rating") {
-        sortByRating();
-      }
-    });
-  };
-
   const sortByDepartureTime = () => {
     const sortedTrips = sortByDepartureTimeAndDate(filteredTrips);
-    setFilteredTrips(sortedTrips);
+    setFiltered(sortedTrips);
   };
 
-  const sortByTicketPrice = () => {
-    const sortedTrips = sortByDiscountAmount(filteredTrips);
-    setFilteredTrips(sortedTrips);
-  };
+  // const sortByTicketPrice = () => {
+  //   const sortedTrips = sortByDiscountAmount(filteredTrips);
+  //   setFilteredTrips(sortedTrips);
+  // };
 
   const sortByRating = () => {
     const sortedTrips = sortRating(filteredTrips);
-    setFilteredTrips(sortedTrips);
+    setFiltered(sortedTrips);
   };
-
-  const handleSelectFilter = (filter:string) => {
-    if (!selectedFilters.includes(filter)) {
-      setSelectedFilters([...selectedFilters, filter]);
-    } else {
-      setSelectedFilters(selectedFilters.filter(f => f !== filter));
-    }
-    setIsClickedSort(true);
-  };
-
-  const handCancle = () =>{
-    setSelectedFilters([]);
-  }
 
   return (
     <div>
@@ -119,7 +96,7 @@ export default function Filter() {
           <h2 className="sub-title">Long Biên - An Lão</h2>
         </div>
         <div className="cancle-filter">
-          <h2 onClick={() => handCancle()}>Xoá lọc</h2>
+          <h2>Xoá lọc</h2>
         </div>
       </div>
       <div>
@@ -130,7 +107,7 @@ export default function Filter() {
           className={`${
             selectedFilters.includes("departure_time") ? "selected-filter" : "button"
           }`}
-          onClick={() => handleSelectFilter("departure_time")}
+          onClick={handleSortByDepartureTime}
         >
           Giờ chạy {isClickedSort && <FontAwesomeIcon icon={faArrowUp} />}
         </button>
@@ -160,8 +137,11 @@ export default function Filter() {
       </div>
 
       <div className="main-list">
-        <Item trips={filteredTrips}/>
+        <Item filteredTrips={filtered}/>
       </div>
     </div>
   );
 }
+
+
+export default Filter;
