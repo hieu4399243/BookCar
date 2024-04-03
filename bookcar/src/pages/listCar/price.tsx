@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Range } from "react-range";
+import React from "react";
 import { NumberWithComans } from "../../utils/numberWithComas";
+import Slider from "@mui/material/Slider";
 
 interface PriceProps {
   setPriceRange: React.Dispatch<React.SetStateAction<number[]>>;
@@ -8,6 +8,14 @@ interface PriceProps {
 }
 
 const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    setPriceRange(newValue as number[]);
+  };
+
+  const formatPrice = (price: number | undefined) => {
+    return price !== undefined ? NumberWithComans(price) + "đ" : "";
+  };
+
   return (
     <div>
       <div className="flex justify-between text-center items-center px-5 mt-5">
@@ -15,54 +23,16 @@ const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
         <h2>0 - 3.000.000đ/vé</h2>
       </div>
       <div className="range">
-        <Range
-          step={1}
+        <Slider
+          value={priceRange}
+          onChange={handleChange}
+          valueLabelDisplay="auto"
           min={0}
           max={3000000}
-          values={priceRange}
-          onChange={(newValues) => setPriceRange(newValues)}
-          renderTrack={({ props, children }) => (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: "6px",
-                width: "100%",
-                backgroundColor: "#ccc",
-              }}
-            >
-              {children}
-              <div
-                style={{
-                  position: "absolute",
-                  height: "6px",
-                  backgroundColor: "#007bff",
-                  borderRadius: "3px",
-                  left: `${(priceRange[0] / 3000000) * 100}%`,
-                  width: `${
-                    ((priceRange[1] - priceRange[0]) / 3000000) * 100
-                  }%`,
-                }}
-              />
-            </div>
-          )}
-          renderThumb={({ props, index }) => (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: "20px",
-                width: "20px",
-                backgroundColor: "#007bff",
-                borderRadius: "50%",
-                boxShadow: "0px 2px 6px #AAA",
-              }}
-            ></div>
-          )}
         />
         <div className="flex justify-between text-center items-center mt-4">
-          <div>{NumberWithComans(priceRange[0])}đ</div>
-          <div>{NumberWithComans(priceRange[1])}đ</div>
+          <div>{formatPrice(priceRange[0])}</div>
+          <div>{formatPrice(priceRange[1])}</div>
         </div>
       </div>
     </div>

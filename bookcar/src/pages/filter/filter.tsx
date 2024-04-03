@@ -32,9 +32,6 @@ interface ItemProps {
 const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
   const location = useLocation();
   const stateFilteredTrips: Trip[] | undefined = location.state?.filteredTrips;
-  const [selectedDateIndex, setSelectedDateIndex] = useState<null | number>(
-    null
-  );
   const [initialData, setInitialData] = useState<Trip[]>(
     stateFilteredTrips || []
   );

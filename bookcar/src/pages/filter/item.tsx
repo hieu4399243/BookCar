@@ -31,6 +31,7 @@ interface ItemProps {
 
 const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
+
   const changeHeart = (index: number) => {
     if (heartSelected === index) {
       setHeartSelected(null);
