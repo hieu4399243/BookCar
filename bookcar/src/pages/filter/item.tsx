@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { formatDuration } from "../../utils/groupTripsByDate";
 import { dateTime } from "../../utils/groupTripsByDate";
 import ic_arrow from "../../assets/images/ic_arrow.svg";
@@ -27,10 +27,17 @@ interface Trip {
 
 interface ItemProps {
   filteredTrips: Trip[];
+  
 }
 
 const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
+  const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
+
+  useEffect(() => {
+    setPrevFilteredTrips(filteredTrips);
+  }, [filteredTrips]);
+
 
   const changeHeart = (index: number) => {
     if (heartSelected === index) {
@@ -41,7 +48,7 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   };
   return (
     <div>
-      {filteredTrips.slice(0, 10).map((item, index) => (
+      {prevFilteredTrips.slice(0, 10).map((item, index) => (
         <div key={index} className="list-travel">
           <div className="item-travel">
             <div className="header-item-travel">
