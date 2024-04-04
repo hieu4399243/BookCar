@@ -99,6 +99,10 @@
   font-size: 20px;
 }
 
+.item-garage{
+  margin-right: 10px;
+}
+
 .list-start {
   background-color: white;
   border-radius: 0.375rem;
@@ -306,6 +310,11 @@
   padding: 5px;
   margin: 0px 5px 10px 5px;
   font-weight: 300;
+}
+
+.image-item-garage{
+  width: 40px;
+  height: 40px;
 }
 
 .list-travel {

@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import Item from "../filter/item";
 import Filter from "../filter/filter";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
@@ -33,7 +32,8 @@ interface Trip {
 export default function Time() {
   const navigate = useNavigate();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(groupedTripsLength);
+  const [filteredTrips, setFilteredTrips] =
+    useState<Trip[]>(groupedTripsLength);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string | null>(
@@ -41,18 +41,27 @@ export default function Time() {
   );
   const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
 
-  const allTransportNames = Array.from(
-    new Set(
-      data.json.coreData.data.map(
-        (trip: Trip) => trip.transport_information.name
-      )
-    )
-  );
+  const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
+  const seenTransportNames = new Set<string>();
+
+  data.json.coreData.data.forEach((trip: Trip) => {
+    const transportName = trip.transport_information.name;
+    if (!seenTransportNames.has(transportName)) {
+      uniqueTransportNames.push({
+        name: transportName,
+        imageUrl: trip.transport_information.image_url,
+      });
+      seenTransportNames.add(transportName);
+    }
+  });
+
+  console.log(uniqueTransportNames);
 
   const allVehicleNames = Array.from(
     new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
   );
 
+  console.log(allVehicleNames);
 
   useEffect(() => {
     let currentFilteredTrips = selectedTime
@@ -126,7 +135,6 @@ export default function Time() {
     setFilteredTrips(filtered);
   };
 
-
   const handleCancel = () => {
     setClickedOption(null);
     setSelectedTime(null);
@@ -137,7 +145,7 @@ export default function Time() {
   };
 
   const applyFilters = () => {
-    navigate('/filter', { state: { filteredTrips } });
+    navigate("/filter", { state: { filteredTrips } });
   };
 
   return (
@@ -147,8 +155,9 @@ export default function Time() {
 
         <div className="grid grid-cols-2 main-grid">
           <div
-            className={`time-option ${clickedOption === "morning" ? "time-option-choose" : ""
-              }`}
+            className={`time-option ${
+              clickedOption === "morning" ? "time-option-choose" : ""
+            }`}
             onClick={handleFilter}
             data-time="morning"
           >
@@ -156,8 +165,9 @@ export default function Time() {
             <p>0:00 - 6:00</p>
           </div>
           <div
-            className={`time-option ${clickedOption === "noon" ? "time-option-choose" : ""
-              }`}
+            className={`time-option ${
+              clickedOption === "noon" ? "time-option-choose" : ""
+            }`}
             onClick={handleFilter}
             data-time="noon"
           >
@@ -165,8 +175,9 @@ export default function Time() {
             <p>6:01 - 12:00</p>
           </div>
           <div
-            className={`time-option ${clickedOption === "afternoon" ? "time-option-choose" : ""
-              }`}
+            className={`time-option ${
+              clickedOption === "afternoon" ? "time-option-choose" : ""
+            }`}
             onClick={handleFilter}
             data-time="afternoon"
           >
@@ -174,8 +185,9 @@ export default function Time() {
             <p>12:01 - 18:00</p>
           </div>
           <div
-            className={`time-option ${clickedOption === "evening" ? "time-option-choose" : ""
-              }`}
+            className={`time-option ${
+              clickedOption === "evening" ? "time-option-choose" : ""
+            }`}
             onClick={handleFilter}
             data-time="evening"
           >
@@ -193,7 +205,40 @@ export default function Time() {
           <div>
             <div className="garage-list">
               <ul>
-                {allTransportNames.map((name, index) => {
+                {uniqueTransportNames.map((item, index) => {
+                  return (
+                    <li key={index} className="garage-list-item">
+                      <div className="item-list-car">
+                        <div className="item-garage">
+                          <img src={item.imageUrl} className="image-item-garage"/>
+                        </div>
+                        <p>{item.name}</p>
+                      </div>
+                      <div>
+                        <img
+                          src={
+                            garageCheckboxes.includes(item.name)
+                              ? ic_selected
+                              : ic_select
+                          }
+                          onClick={() => handleCheckBoxByGarage(item.name)}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="category-car">
+          <div>
+            <h2 className="font-semibold mb-3">Loại xe</h2>
+          </div>
+          <div>
+            <div className="vertical-list">
+              <ul>
+                {allVehicleNames.map((name, index) => {
                   return (
                     <li key={name} className="garage-list-item">
                       <div className="item-list-car">
@@ -205,11 +250,9 @@ export default function Time() {
                       <div>
                         <img
                           src={
-                            garageCheckboxes.includes(name)
-                              ? ic_selected
-                              : ic_select
+                            vehicleCheckboxes === name ? ic_selected : ic_select
                           }
-                          onClick={() => handleCheckBoxByGarage(name)}
+                          onClick={() => handleCheckBox(name)}
                         />
                       </div>
                     </li>
@@ -217,40 +260,6 @@ export default function Time() {
                 })}
               </ul>
             </div>
-
-          </div>
-        </div>
-        <div className="category-car">
-          <div>
-            <h2 className="font-semibold mb-3">Loại xe</h2>
-          </div>
-          <div>
-              <div className="vertical-list">
-                <ul>
-                  {allVehicleNames.map((name, index) => {
-                    return (
-                      <li key={name} className="garage-list-item">
-                        <div className="item-list-car">
-                          <div className="item-car">
-                            <FontAwesomeIcon icon={faBusSimple} />
-                          </div>
-                          <p>{name}</p>
-                        </div>
-                        <div>
-                          <img
-                            src={
-                              vehicleCheckboxes === name
-                                ? ic_selected
-                                : ic_select
-                            }
-                            onClick={() => handleCheckBox(name)}
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
           </div>
         </div>
         <div className="footer-list">
