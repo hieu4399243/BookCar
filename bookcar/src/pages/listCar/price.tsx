@@ -7,7 +7,7 @@ interface PriceProps {
   priceRange: number[];
 }
 
-const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
+const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => { 
   const handleChange = (event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
   };

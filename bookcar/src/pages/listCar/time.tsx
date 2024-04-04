@@ -6,8 +6,6 @@ import ic_select from "../../assets/images/ic_select.svg";
 import ic_selected from "../../assets/images/ic_selected.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
-import Item from "../filter/item";
-import Filter from "../filter/filter";
 import { useNavigate } from "react-router-dom";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
@@ -31,7 +29,7 @@ interface Trip {
 
 export default function Time() {
   const navigate = useNavigate();
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string[]>([]);
   const [filteredTrips, setFilteredTrips] =
     useState<Trip[]>(groupedTripsLength);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
@@ -55,18 +53,22 @@ export default function Time() {
     }
   });
 
-  console.log(uniqueTransportNames);
-
   const allVehicleNames = Array.from(
     new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
   );
 
-  console.log(allVehicleNames);
-
   useEffect(() => {
-    let currentFilteredTrips = selectedTime
-      ? groupedTrips[selectedTime] || []
-      : data.json.coreData.data;
+    let currentFilteredTrips = data.json.coreData.data;
+
+    if (selectedTime.length > 0) {
+      currentFilteredTrips = selectedTime.reduce(
+        (acc: Trip[], time: string) => {
+          return acc.concat(groupedTrips[time] || []);
+        },
+        []
+      );
+    }
+
     currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
       return (
         trip.discount_amount >= priceRange[0] &&
@@ -78,28 +80,40 @@ export default function Time() {
     });
 
     setFilteredTrips(currentFilteredTrips);
-  }, [selectedTime, priceRange, garageCheckboxes, vehicleCheckboxes]);
+  }, [
+    selectedTime,
+    priceRange,
+    garageCheckboxes,
+    vehicleCheckboxes,
+    groupedTrips,
+  ]);
 
   const handleFilter: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const time = event.currentTarget.getAttribute("data-time");
     if (time) {
-      setSelectedTime(time);
+      const updateSelectedTime = selectedTime.includes(time)
+        ? selectedTime.filter((t) => t !== time)
+        : [...selectedTime, time];
+      setSelectedTime(updateSelectedTime);
       setClickedOption(time === clickedOption ? null : time);
-      const tripsInSelectedTime = (groupedTrips[time] as Trip[]).flat();
+      const tripsInSelectedTime = groupedTrips[time] || [];
       setFilteredTrips(tripsInSelectedTime);
     } else {
-      setSelectedTime(null);
+      setSelectedTime([]);
       setClickedOption(null);
     }
   };
 
+  const isOptionSelected = (time: string) => selectedTime.includes(time);
+  console.log(isOptionSelected);
+
   const handleCheckBox = (name: string) => {
     if (name === vehicleCheckboxes) {
       setVehicleCheckboxes(null);
-      if (selectedTime) {
-        const tripsInSelectedTime = (
-          groupedTrips[selectedTime] as Trip[]
-        ).flat();
+      if (selectedTime.length > 0) {
+        const tripsInSelectedTime: Trip[] = selectedTime.flatMap(
+          (time) => groupedTrips[time] || []
+        );
         setFilteredTrips(tripsInSelectedTime);
       }
     } else {
@@ -137,7 +151,7 @@ export default function Time() {
 
   const handleCancel = () => {
     setClickedOption(null);
-    setSelectedTime(null);
+    setSelectedTime([]);
     setFilteredTrips(groupedTripsLength);
     setPriceRange([0, 3000000]);
     setVehicleCheckboxes(null);
@@ -156,7 +170,7 @@ export default function Time() {
         <div className="grid grid-cols-2 main-grid">
           <div
             className={`time-option ${
-              clickedOption === "morning" ? "time-option-choose" : ""
+              isOptionSelected("morning") ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="morning"
@@ -166,7 +180,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "noon" ? "time-option-choose" : ""
+              isOptionSelected("noon") ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="noon"
@@ -176,7 +190,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "afternoon" ? "time-option-choose" : ""
+              isOptionSelected("afternoon") ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="afternoon"
@@ -186,7 +200,7 @@ export default function Time() {
           </div>
           <div
             className={`time-option ${
-              clickedOption === "evening" ? "time-option-choose" : ""
+              isOptionSelected("evening") ? "time-option-choose" : ""
             }`}
             onClick={handleFilter}
             data-time="evening"
@@ -210,7 +224,10 @@ export default function Time() {
                     <li key={index} className="garage-list-item">
                       <div className="item-list-car">
                         <div className="item-garage">
-                          <img src={item.imageUrl} className="image-item-garage"/>
+                          <img
+                            src={item.imageUrl}
+                            className="image-item-garage"
+                          />
                         </div>
                         <p>{item.name}</p>
                       </div>
