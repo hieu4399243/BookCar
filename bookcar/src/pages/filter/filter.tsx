@@ -64,9 +64,10 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
 
   const handleSort = (field: string) => {
     let newSortDirection: "asc" | "desc" | null = null;
-
+  
     let sortedTrips: Trip[] = [...filtered];
-
+    let updatedFilters: string[] = [...selectedFilters];
+  
     if (field === "departure_time") {
       newSortDirection = sortDirectionDeparture === "asc" ? "desc" : "asc";
       setSortDirectionDeparture(newSortDirection);
@@ -75,14 +76,14 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           ? sortByDepartureTimeAndDate(a, b)
           : sortByDepartureTimeAndDate(b, a)
       );
-      setSelectedFilters(["departure_time"]);
+      updatedFilters = ["departure_time", ...selectedFilters.filter(filter => filter !== "departure_time")];
     } else if (field === "rating") {
       newSortDirection = sortDirectionRating === "asc" ? "desc" : "asc";
       setSortDirectionRating(newSortDirection);
       sortedTrips.sort((a, b) =>
         newSortDirection === "asc" ? sortRating(a, b) : sortRating(b, a)
       );
-      setSelectedFilters(["rating"]);
+      updatedFilters = ["rating", ...selectedFilters.filter(filter => filter !== "rating")];
     } else if (field === "discount_amount") {
       newSortDirection = sortDirectionDiscount === "asc" ? "desc" : "asc";
       setSortDirectionDiscount(newSortDirection);
@@ -91,11 +92,13 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           ? a.discount_amount - b.discount_amount
           : b.discount_amount - a.discount_amount
       );
-      setSelectedFilters(["discount_amount"]);
+      updatedFilters = ["discount_amount", ...selectedFilters.filter(filter => filter !== "discount_amount")];
     }
-
+  
+    setSelectedFilters(updatedFilters);
     setFiltered(sortedTrips);
   };
+  
 
   const handCancle = () => {
     setSelectedFilters([]);

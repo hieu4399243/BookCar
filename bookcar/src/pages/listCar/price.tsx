@@ -30,7 +30,7 @@ const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
           min={0}
           max={3000000}
         />
-        <div className="flex justify-between text-center items-center mt-4">
+        <div className="flex justify-between text-center items-center">
           <div>{formatPrice(priceRange[0])}</div>
           <div>{formatPrice(priceRange[1])}</div>
         </div>

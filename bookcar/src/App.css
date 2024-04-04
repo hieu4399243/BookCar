@@ -112,7 +112,7 @@
 }
 
 .range {
-  padding: 30px 20px 10px 20px;
+  padding: 10px 20px 10px 20px;
   background: white;
   border-radius: 5px;
   margin: 11px;
@@ -282,6 +282,7 @@
 .filter-button {
   display: flex;
   align-items: center;
+  width: 430px;
 }
 
 .filter-button .button {
