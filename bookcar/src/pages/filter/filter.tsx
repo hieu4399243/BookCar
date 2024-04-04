@@ -47,6 +47,8 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
     "asc" | "desc" | null
   >(null);
 
+  const [selectedButton, setSelectedButton] = useState<string>("");
+
   const sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
     const dateComparison = a.pick_up_date.localeCompare(b.pick_up_date);
     if (dateComparison === 0) {
@@ -64,10 +66,11 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
 
   const handleSort = (field: string) => {
     let newSortDirection: "asc" | "desc" | null = null;
-  
+
     let sortedTrips: Trip[] = [...filtered];
-    let updatedFilters: string[] = [...selectedFilters];
-  
+    let updatedFilters: string[] = [];
+    let selectedButtonIcon = "";
+
     if (field === "departure_time") {
       newSortDirection = sortDirectionDeparture === "asc" ? "desc" : "asc";
       setSortDirectionDeparture(newSortDirection);
@@ -76,14 +79,16 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           ? sortByDepartureTimeAndDate(a, b)
           : sortByDepartureTimeAndDate(b, a)
       );
-      updatedFilters = ["departure_time", ...selectedFilters.filter(filter => filter !== "departure_time")];
+      updatedFilters = ["departure_time"];
+      selectedButtonIcon = "sortDirectionDeparture";
     } else if (field === "rating") {
       newSortDirection = sortDirectionRating === "asc" ? "desc" : "asc";
       setSortDirectionRating(newSortDirection);
       sortedTrips.sort((a, b) =>
         newSortDirection === "asc" ? sortRating(a, b) : sortRating(b, a)
       );
-      updatedFilters = ["rating", ...selectedFilters.filter(filter => filter !== "rating")];
+      updatedFilters = ["rating"];
+      selectedButtonIcon = "sortDirectionRating";
     } else if (field === "discount_amount") {
       newSortDirection = sortDirectionDiscount === "asc" ? "desc" : "asc";
       setSortDirectionDiscount(newSortDirection);
@@ -92,16 +97,44 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           ? a.discount_amount - b.discount_amount
           : b.discount_amount - a.discount_amount
       );
-      updatedFilters = ["discount_amount", ...selectedFilters.filter(filter => filter !== "discount_amount")];
+      updatedFilters = ["discount_amount"];
+      selectedButtonIcon = "sortDirectionDiscount";
     }
-  
+
     setSelectedFilters(updatedFilters);
+    setSelectedButton(selectedButtonIcon);
+    sortTripsAndUpdate(filtered, newSortDirection, field);
+  };
+
+  const sortTripsAndUpdate = (
+    trips: Trip[],
+    direction: "asc" | "desc" | null,
+    field: string
+  ) => {
+    let sortedTrips = [...trips];
+    if (field === "departure_time") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc"
+          ? sortByDepartureTimeAndDate(a, b)
+          : sortByDepartureTimeAndDate(b, a)
+      );
+    } else if (field === "rating") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc" ? sortRating(a, b) : sortRating(b, a)
+      );
+    } else if (field === "discount_amount") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc"
+          ? a.discount_amount - b.discount_amount
+          : b.discount_amount - a.discount_amount
+      );
+    }
     setFiltered(sortedTrips);
   };
-  
 
   const handCancle = () => {
     setSelectedFilters([]);
+    setSelectedButton("");
     setSortDirectionDeparture(null);
     setSortDirectionRating(null);
     setSortDirectionDiscount(null);
@@ -134,51 +167,54 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
         <div className="filter-button">
           <button
             className={`${
-              selectedFilters.includes("departure_time")
+              selectedFilters.includes("departure_time") &&
+              selectedButton === "sortDirectionDeparture"
                 ? "selected-filter"
                 : "button"
             }`}
             onClick={() => handleSort("departure_time")}
           >
             Giờ chạy{" "}
-            {sortDirectionDeparture === "asc" && (
-              <FontAwesomeIcon icon={faArrowUp} />
-            )}
-            {sortDirectionDeparture === "desc" && (
-              <FontAwesomeIcon icon={faArrowDown} />
-            )}
+            {selectedButton === "sortDirectionDeparture" &&
+              (sortDirectionDeparture === "asc" ? (
+                <FontAwesomeIcon icon={faArrowUp} />
+              ) : (
+                <FontAwesomeIcon icon={faArrowDown} />
+              ))}
           </button>
-
           <button
             className={`${
-              selectedFilters.includes("discount_amount")
+              selectedFilters.includes("discount_amount") &&
+              selectedButton === "sortDirectionDiscount"
                 ? "selected-filter"
                 : "button"
             }`}
             onClick={() => handleSort("discount_amount")}
           >
             Giá vé{" "}
-            {sortDirectionDiscount === "asc" && (
-              <FontAwesomeIcon icon={faArrowUp} />
-            )}
-            {sortDirectionDiscount === "desc" && (
-              <FontAwesomeIcon icon={faArrowDown} />
-            )}
+            {selectedButton === "sortDirectionDiscount" &&
+              (sortDirectionDiscount === "asc" ? (
+                <FontAwesomeIcon icon={faArrowUp} />
+              ) : (
+                <FontAwesomeIcon icon={faArrowDown} />
+              ))}
           </button>
-
           <button
             className={`${
-              selectedFilters.includes("rating") ? "selected-filter" : "button"
+              selectedFilters.includes("rating") &&
+              selectedButton === "sortDirectionRating"
+                ? "selected-filter"
+                : "button"
             }`}
             onClick={() => handleSort("rating")}
           >
             Đánh giá{" "}
-            {sortDirectionRating === "asc" && (
-              <FontAwesomeIcon icon={faArrowUp} />
-            )}
-            {sortDirectionRating === "desc" && (
-              <FontAwesomeIcon icon={faArrowDown} />
-            )}
+            {selectedButton === "sortDirectionRating" &&
+              (sortDirectionRating === "asc" ? (
+                <FontAwesomeIcon icon={faArrowUp} />
+              ) : (
+                <FontAwesomeIcon icon={faArrowDown} />
+              ))}
           </button>
 
           <Link className="filter-icon" to={"/list"}>

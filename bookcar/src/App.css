@@ -72,7 +72,7 @@
 }
 
 .selected-filter {
-  background-color: blue;
+  background-color: #4465f0;
   color: white;
   flex: 1 1;
   border-radius: 10px;
@@ -286,7 +286,7 @@
 }
 
 .filter-button .button {
-  background-color: #f7f7f7;
+  background-color: #e5e5e5;
   color: black;
   flex: 1 1;
   border-radius: 10px;
@@ -296,8 +296,8 @@
 }
 
 .filter-icon {
-  background-color: #4465f0;
-  color: white;
+  background-color: #e5e5e5;
+  color: black;
   display: flex;
   align-items: center;
   flex: 0.7 1;
