@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import ic_back from "../../assets/images/ic_back.svg";
 import ic_filter_white from "../../assets/images/ic_filter_white.svg";
@@ -46,6 +46,14 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [sortDirectionDiscount, setSortDirectionDiscount] = useState<
     "asc" | "desc" | null
   >(null);
+
+  useEffect(() => {
+    const storedFilteredTrips = localStorage.getItem("filteredTrips");
+    if (storedFilteredTrips) {
+      setInitialData(JSON.parse(storedFilteredTrips));
+      setFiltered(JSON.parse(storedFilteredTrips));
+    }
+  }, []);
 
   const [selectedButton, setSelectedButton] = useState<string>("");
 

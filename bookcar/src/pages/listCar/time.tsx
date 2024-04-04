@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
+const STORAGE_KEY = "filteredTrips";
+
 interface Trip {
   uuid: string;
   name: string;
@@ -30,8 +32,10 @@ interface Trip {
 export default function Time() {
   const navigate = useNavigate();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const [filteredTrips, setFilteredTrips] =
-    useState<Trip[]>(groupedTripsLength);
+  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(() => {
+    const storedData = localStorage.getItem(STORAGE_KEY);
+    return storedData ? JSON.parse(storedData) : groupedTripsLength;
+  });
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string | null>(
@@ -105,7 +109,6 @@ export default function Time() {
   };
 
   const isOptionSelected = (time: string) => selectedTime.includes(time);
-  console.log(isOptionSelected);
 
   const handleCheckBox = (name: string) => {
     if (name === vehicleCheckboxes) {
@@ -159,6 +162,7 @@ export default function Time() {
   };
 
   const applyFilters = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredTrips));
     navigate("/filter", { state: { filteredTrips } });
   };
 
