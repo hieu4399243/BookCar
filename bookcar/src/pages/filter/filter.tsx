@@ -7,6 +7,7 @@ import Slider from "./slider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
+import Spinner from "../../components/spinner";
 
 interface Trip {
   uuid: string;
@@ -46,12 +47,16 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [sortDirectionDiscount, setSortDirectionDiscount] = useState<
     "asc" | "desc" | null
   >(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const storedFilteredTrips = localStorage.getItem("filteredTrips");
     if (storedFilteredTrips) {
       setInitialData(JSON.parse(storedFilteredTrips));
       setFiltered(JSON.parse(storedFilteredTrips));
+      setTimeout(() => {
+        setLoading(false);
+      }, 5000);
     }
   }, []);
 
@@ -72,13 +77,40 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
     );
   };
 
+  const sortTripsAndUpdate = (
+    trips: Trip[],
+    direction: "asc" | "desc" | null,
+    field: string
+  ) => {
+    let sortedTrips = [...trips];
+    if (field === "departure_time") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc"
+          ? sortByDepartureTimeAndDate(a, b)
+          : sortByDepartureTimeAndDate(b, a)
+      );
+    } else if (field === "rating") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc" ? sortRating(a, b) : sortRating(b, a)
+      );
+    } else if (field === "discount_amount") {
+      sortedTrips.sort((a, b) =>
+        direction === "asc"
+          ? a.discount_amount - b.discount_amount
+          : b.discount_amount - a.discount_amount
+      );
+    }
+    setFiltered(sortedTrips);
+    setLoading(false);
+  };
+
   const handleSort = (field: string) => {
+    setLoading(true);
     let newSortDirection: "asc" | "desc" | null = null;
 
     let sortedTrips: Trip[] = [...filtered];
     let updatedFilters: string[] = [];
     let selectedButtonIcon = "";
-
     if (field === "departure_time") {
       newSortDirection = sortDirectionDeparture === "asc" ? "desc" : "asc";
       setSortDirectionDeparture(newSortDirection);
@@ -111,33 +143,7 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
 
     setSelectedFilters(updatedFilters);
     setSelectedButton(selectedButtonIcon);
-    sortTripsAndUpdate(filtered, newSortDirection, field);
-  };
-
-  const sortTripsAndUpdate = (
-    trips: Trip[],
-    direction: "asc" | "desc" | null,
-    field: string
-  ) => {
-    let sortedTrips = [...trips];
-    if (field === "departure_time") {
-      sortedTrips.sort((a, b) =>
-        direction === "asc"
-          ? sortByDepartureTimeAndDate(a, b)
-          : sortByDepartureTimeAndDate(b, a)
-      );
-    } else if (field === "rating") {
-      sortedTrips.sort((a, b) =>
-        direction === "asc" ? sortRating(a, b) : sortRating(b, a)
-      );
-    } else if (field === "discount_amount") {
-      sortedTrips.sort((a, b) =>
-        direction === "asc"
-          ? a.discount_amount - b.discount_amount
-          : b.discount_amount - a.discount_amount
-      );
-    }
-    setFiltered(sortedTrips);
+    sortTripsAndUpdate(sortedTrips, newSortDirection, field);
   };
 
   const handCancle = () => {
@@ -151,7 +157,14 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
 
   return (
     <div>
-      <div className="header-filter-list">
+      
+      <div
+        className={
+          !loading
+            ? "header-filter-list"
+            : "header-filter-list overlay-content"
+        }
+      >
         <div className="flex p-5 bg-white items-center">
           <div style={{ marginRight: "5px" }}>
             <Link to={"/"}>
@@ -164,7 +177,9 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           </div>
           <div
             className="cancle-filter"
-            style={{ display: selectedFilters.length > 0 ? "block" : "none" }}
+            style={{
+              display: selectedFilters.length > 0 ? "block" : "none",
+            }}
           >
             <h2 onClick={() => handCancle()}>Xoá lọc</h2>
           </div>
@@ -231,10 +246,14 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
           </Link>
         </div>
       </div>
+      
+      {!loading && (
+        <div className={!loading ? "main-list-filter" : "main-list-filter"}>
+          <Item filteredTrips={filtered} />
+        </div>
+      )}
 
-      <div className="main-list-filter">
-        <Item filteredTrips={filtered} />
-      </div>
+      {loading && <Spinner />}
     </div>
   );
 };

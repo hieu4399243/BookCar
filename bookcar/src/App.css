@@ -570,3 +570,8 @@
   color: #c8c8c8;
   margin-top: -5px;
 }
+
+.overlay-content {
+  opacity: 0.5;
+  pointer-events: none;
+}
