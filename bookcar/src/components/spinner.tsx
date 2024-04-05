@@ -1,4 +1,4 @@
-import { Oval } from "react-loader-spinner";
+import { ColorRing } from "react-loader-spinner";
 import React from "react";
 
 export default function Spinner() {
@@ -11,14 +11,14 @@ export default function Spinner() {
         height: "100vh",
       }}
     >
-      <Oval
+      <ColorRing
         visible={true}
         height="80"
         width="80"
-        color="#4fa94d"
-        ariaLabel="oval-loading"
+        ariaLabel="color-ring-loading"
         wrapperStyle={{}}
-        wrapperClass=""
+        wrapperClass="color-ring-wrapper"
+        colors={["#4465f0", "#1e48ed", "#637eec", "#6782ec", "#637eec"]}
       />
     </div>
   );
