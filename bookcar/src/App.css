@@ -36,6 +36,7 @@
 .main-list-filter{
   background: linear-gradient(to right, #f1f1f1, #f2f2f2);
   margin-top: 208px;
+  overflow: hidden;
 }
 
 .App-link {

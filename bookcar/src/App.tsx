@@ -39,7 +39,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/filter" element={<Filter filteredTrips={data} />} /> 
         <Route path="/list" element={<List />} />
-      </Routes>
+\      </Routes>
     </div>
   );
 }
