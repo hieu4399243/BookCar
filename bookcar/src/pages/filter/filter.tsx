@@ -49,6 +49,8 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const [selectedButton, setSelectedButton] = useState<string>("");
+
   useEffect(() => {
     const storedFilteredTrips = localStorage.getItem("filteredTrips");
     if (storedFilteredTrips) {
@@ -56,11 +58,10 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
       setFiltered(JSON.parse(storedFilteredTrips));
       setTimeout(() => {
         setLoading(false);
-      }, 5000);
+      }, 2000);
     }
   }, []);
 
-  const [selectedButton, setSelectedButton] = useState<string>("");
 
   const sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
     const dateComparison = a.pick_up_date.localeCompare(b.pick_up_date);

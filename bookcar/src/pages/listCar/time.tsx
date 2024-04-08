@@ -134,10 +134,8 @@ export default function Time() {
       updatedGarageCheckboxes = garageCheckboxes.filter(
         (checkbox) => checkbox !== name
       );
-      console.log(updatedGarageCheckboxes);
     } else {
       updatedGarageCheckboxes = [...garageCheckboxes, name];
-      console.log(updatedGarageCheckboxes);
     }
     setGarageCheckboxes(updatedGarageCheckboxes);
 

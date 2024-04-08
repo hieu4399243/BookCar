@@ -34,8 +34,6 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
   const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
 
-  console.log(filteredTrips);
-
   useEffect(() => {
     setPrevFilteredTrips(filteredTrips);
   }, [filteredTrips]);
@@ -135,3 +133,6 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
 };
 
 export default Item;
+
+
+
