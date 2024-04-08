@@ -6,8 +6,8 @@ import Item from "./item";
 import Slider from "./slider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
 import Spinner from "../../components/spinner";
+import { useSelector } from "react-redux";
 
 interface Trip {
   uuid: string;
@@ -26,17 +26,11 @@ interface Trip {
   discount_amount: number;
 }
 
-interface ItemProps {
-  filteredTrips: Trip[];
-}
-
-const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
-  const location = useLocation();
-  const stateFilteredTrips: Trip[] | undefined = location.state?.filteredTrips;
-  const [initialData, setInitialData] = useState<Trip[]>(
-    stateFilteredTrips || []
+const Filter = () => {
+  const filteredTrips = useSelector((state:any) => state.filteredTrips);
+  const [initialData, setInitialData] = useState<Trip[]>(filteredTrips
   );
-  const [filtered, setFiltered] = useState<Trip[]>(stateFilteredTrips || []);
+  const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [sortDirectionDeparture, setSortDirectionDeparture] = useState<
     "asc" | "desc" | null
@@ -51,10 +45,7 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [selectedButton, setSelectedButton] = useState<string>("");
 
   useEffect(() => {
-    const storedFilteredTrips = localStorage.getItem("filteredTrips");
-    if (storedFilteredTrips) {
-      setInitialData(JSON.parse(storedFilteredTrips));
-      setFiltered(JSON.parse(storedFilteredTrips));
+    if (filteredTrips) {
       setTimeout(() => {
         setLoading(false);
       }, 2000);

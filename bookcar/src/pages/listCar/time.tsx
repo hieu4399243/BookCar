@@ -7,10 +7,11 @@ import ic_selected from "../../assets/images/ic_selected.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilteredTrips } from "../../features/slices/filterTripSlice";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
-const STORAGE_KEY = "filteredTrips";
 
 interface Trip {
   uuid: string;
@@ -29,13 +30,12 @@ interface Trip {
   discount_amount: number;
 }
 
+
 export default function Time() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const [filteredTrips, setFilteredTrips] = useState<Trip[]>(() => {
-    const storedData = localStorage.getItem(STORAGE_KEY);
-    return storedData ? JSON.parse(storedData) : groupedTripsLength;
-  });
+  const filteredTrips = useSelector((state: any) => state.filteredTrips);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string | null>(
@@ -62,6 +62,11 @@ export default function Time() {
   );
 
   useEffect(() => {
+    dispatch(setFilteredTrips(groupedTripsLength));
+    console.log(dispatch(setFilteredTrips(groupedTripsLength)));
+  }, [dispatch]);
+
+  useEffect(() => {
     let currentFilteredTrips = data.json.coreData.data;
 
     if (selectedTime.length > 0) {
@@ -83,29 +88,24 @@ export default function Time() {
       );
     });
 
-    setFilteredTrips(currentFilteredTrips);
+    dispatch(setFilteredTrips(currentFilteredTrips));
   }, [
     selectedTime,
     priceRange,
     garageCheckboxes,
     vehicleCheckboxes,
     groupedTrips,
+    dispatch,
   ]);
 
-  const handleFilter: React.MouseEventHandler<HTMLDivElement> = (event) => {
-    const time = event.currentTarget.getAttribute("data-time");
-    if (time) {
-      const updateSelectedTime = selectedTime.includes(time)
-        ? selectedTime.filter((t) => t !== time)
-        : [...selectedTime, time];
-      setSelectedTime(updateSelectedTime);
-      setClickedOption(time === clickedOption ? null : time);
-      const tripsInSelectedTime = groupedTrips[time] || [];
-      setFilteredTrips(tripsInSelectedTime);
-    } else {
-      setSelectedTime([]);
-      setClickedOption(null);
-    }
+  const handleFilter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, time: string) => {
+    const updateSelectedTime = selectedTime.includes(time)
+      ? selectedTime.filter((t) => t !== time)
+      : [...selectedTime, time];
+    setSelectedTime(updateSelectedTime);
+    setClickedOption(time === clickedOption ? null : time);
+    const tripsInSelectedTime = groupedTrips[time] || [];
+    dispatch(setFilteredTrips(tripsInSelectedTime));
   };
 
   const isOptionSelected = (time: string) => selectedTime.includes(time);
@@ -117,14 +117,14 @@ export default function Time() {
         const tripsInSelectedTime: Trip[] = selectedTime.flatMap(
           (time) => groupedTrips[time] || []
         );
-        setFilteredTrips(tripsInSelectedTime);
+        dispatch(setFilteredTrips(tripsInSelectedTime));
       }
     } else {
       setVehicleCheckboxes(name);
       const filteredTripsByVehicle = filteredTrips.filter(
         (trip: Trip) => trip.vehicle_name === name
       );
-      setFilteredTrips(filteredTripsByVehicle);
+      dispatch(setFilteredTrips(filteredTripsByVehicle));
     }
   };
 
@@ -147,21 +147,20 @@ export default function Time() {
     } else {
       filtered = groupedTripsLength;
     }
-    setFilteredTrips(filtered);
+    dispatch(setFilteredTrips(filtered));
   };
 
   const handleCancel = () => {
     setClickedOption(null);
     setSelectedTime([]);
-    setFilteredTrips(groupedTripsLength);
+    dispatch(setFilteredTrips(groupedTripsLength));
     setPriceRange([0, 3000000]);
     setVehicleCheckboxes(null);
     setGarageCheckboxes([]);
   };
 
   const applyFilters = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredTrips));
-    navigate("/filter", { state: { filteredTrips } });
+    navigate("/filter");
   };
 
   return (
@@ -174,7 +173,7 @@ export default function Time() {
             className={`time-option ${
               isOptionSelected("morning") ? "time-option-choose" : ""
             }`}
-            onClick={handleFilter}
+            onClick={(e) => handleFilter(e, "morning")}
             data-time="morning"
           >
             <button className="font-normal text-[#a7a7a7]">Sáng sớm</button>
@@ -184,7 +183,7 @@ export default function Time() {
             className={`time-option ${
               isOptionSelected("noon") ? "time-option-choose" : ""
             }`}
-            onClick={handleFilter}
+            onClick={(e) => handleFilter(e, "noon")}
             data-time="noon"
           >
             <button className="font-normal text-[#a7a7a7]">Buổi sáng</button>
@@ -194,7 +193,7 @@ export default function Time() {
             className={`time-option ${
               isOptionSelected("afternoon") ? "time-option-choose" : ""
             }`}
-            onClick={handleFilter}
+            onClick={(e) => handleFilter(e, "afternoon")}
             data-time="afternoon"
           >
             <button className="font-normal text-[#a7a7a7]">Buổi trưa</button>
@@ -204,7 +203,7 @@ export default function Time() {
             className={`time-option ${
               isOptionSelected("evening") ? "time-option-choose" : ""
             }`}
-            onClick={handleFilter}
+            onClick={(e) => handleFilter(e, "evening")}
             data-time="evening"
           >
             <button className="font-normal text-[#a7a7a7]">Buổi tối</button>

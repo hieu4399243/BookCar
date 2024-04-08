@@ -33,12 +33,12 @@ interface ItemProps {
 const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number | null>(null);
   const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
-  console.log("1: ", prevFilteredTrips);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [itemsToShow, setItemsToShow] = useState<number>(10);
 
 
   useEffect(() => {
+    console.log(filteredTrips.length);
     setPrevFilteredTrips(filteredTrips.slice(0, itemsToShow));
   }, [filteredTrips, itemsToShow]);
 
