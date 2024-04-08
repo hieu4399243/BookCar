@@ -8,7 +8,6 @@ import { NumberWithComans } from "../../utils/numberWithComas";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Hidden } from "@mui/material";
 
 interface Trip {
   uuid: string;
@@ -56,12 +55,6 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
     setTimeout(() => {
       setItemsToShow(itemsToShow + 10);
     }, 2000);
-  };
-
-  const getNextData = (): Trip[] => {
-    const newData: Trip[] = [];
-    console.log("2", newData);
-    return newData;
   };
 
   return (

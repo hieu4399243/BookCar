@@ -48,7 +48,6 @@ const Filter: React.FC<ItemProps> = ({ filteredTrips }) => {
     "asc" | "desc" | null
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   const [selectedButton, setSelectedButton] = useState<string>("");
 
   useEffect(() => {

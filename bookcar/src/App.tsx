@@ -26,11 +26,8 @@ interface Trip {
   discount_amount: number;
 }
 
-// Example data
 const data: Trip[] = [
 ];
-
-
 
 function App() {
   return (
@@ -39,7 +36,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/filter" element={<Filter filteredTrips={data} />} /> 
         <Route path="/list" element={<List />} />
-\      </Routes>
+      </Routes>
     </div>
   );
 }
