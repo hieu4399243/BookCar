@@ -9,6 +9,7 @@ import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilteredTrips } from "../../features/slices/filterTripSlice";
+import { useLocation } from "react-router-dom";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
@@ -30,7 +31,6 @@ interface Trip {
   discount_amount: number;
 }
 
-
 export default function Time() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,13 +38,12 @@ export default function Time() {
   const filteredTrips = useSelector((state: any) => state.filteredTrips);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
-  const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string | null>(
-    null
-  );
+  const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
   const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
 
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();
+
 
   data.json.coreData.data.forEach((trip: Trip) => {
     const transportName = trip.transport_information.name;
@@ -63,7 +62,6 @@ export default function Time() {
 
   useEffect(() => {
     dispatch(setFilteredTrips(groupedTripsLength));
-    console.log(dispatch(setFilteredTrips(groupedTripsLength)));
   }, [dispatch]);
 
   useEffect(() => {
@@ -82,7 +80,7 @@ export default function Time() {
       return (
         trip.discount_amount >= priceRange[0] &&
         trip.discount_amount <= priceRange[1] &&
-        (!vehicleCheckboxes || trip.vehicle_name === vehicleCheckboxes) &&
+        (vehicleCheckboxes.length === 0 || vehicleCheckboxes.includes(trip.vehicle_name)) &&
         (garageCheckboxes.length === 0 ||
           garageCheckboxes.includes(trip.transport_information.name))
       );
@@ -98,7 +96,10 @@ export default function Time() {
     dispatch,
   ]);
 
-  const handleFilter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, time: string) => {
+  const handleFilter = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    time: string
+  ) => {
     const updateSelectedTime = selectedTime.includes(time)
       ? selectedTime.filter((t) => t !== time)
       : [...selectedTime, time];
@@ -111,21 +112,25 @@ export default function Time() {
   const isOptionSelected = (time: string) => selectedTime.includes(time);
 
   const handleCheckBox = (name: string) => {
-    if (name === vehicleCheckboxes) {
-      setVehicleCheckboxes(null);
-      if (selectedTime.length > 0) {
-        const tripsInSelectedTime: Trip[] = selectedTime.flatMap(
-          (time) => groupedTrips[time] || []
-        );
-        dispatch(setFilteredTrips(tripsInSelectedTime));
-      }
-    } else {
-      setVehicleCheckboxes(name);
-      const filteredTripsByVehicle = filteredTrips.filter(
-        (trip: Trip) => trip.vehicle_name === name
+    let updatedVehicleCheckboxes: string[];
+    if (vehicleCheckboxes.includes(name)) {
+      updatedVehicleCheckboxes = vehicleCheckboxes.filter(
+        (checkbox) => checkbox !== name
       );
-      dispatch(setFilteredTrips(filteredTripsByVehicle));
+    } else {
+      updatedVehicleCheckboxes = [...vehicleCheckboxes, name];
     }
+    setVehicleCheckboxes(updatedVehicleCheckboxes);
+
+    let filtered;
+    if (updatedVehicleCheckboxes.length > 0) {
+      filtered = groupedTripsLength.filter((trip: Trip) =>
+      updatedVehicleCheckboxes.includes(trip.vehicle_name)
+      );
+    } else {
+      filtered = groupedTripsLength;
+    }
+    dispatch(setFilteredTrips(filtered));
   };
 
   const handleCheckBoxByGarage = (name: string) => {
@@ -155,7 +160,7 @@ export default function Time() {
     setSelectedTime([]);
     dispatch(setFilteredTrips(groupedTripsLength));
     setPriceRange([0, 3000000]);
-    setVehicleCheckboxes(null);
+    setVehicleCheckboxes([]);
     setGarageCheckboxes([]);
   };
 
@@ -268,7 +273,7 @@ export default function Time() {
                       <div>
                         <img
                           src={
-                            vehicleCheckboxes === name ? ic_selected : ic_select
+                            vehicleCheckboxes.includes(name) ? ic_selected : ic_select
                           }
                           onClick={() => handleCheckBox(name)}
                         />
@@ -285,7 +290,8 @@ export default function Time() {
             Xoá lọc
           </button>
           <button className="button-right" onClick={applyFilters}>
-            Áp dụng({filteredTrips.length})
+            Áp dụng(
+            {filteredTrips && filteredTrips.length ? filteredTrips.length : 0})
           </button>
         </div>
       </div>

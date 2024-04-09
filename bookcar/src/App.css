@@ -33,7 +33,7 @@
   margin-top: 60px;
 }
 
-.main-list-filter{
+.main-list-filter {
   background: linear-gradient(to right, #f1f1f1, #f2f2f2);
   margin-top: 208px;
   overflow: hidden;
@@ -55,7 +55,7 @@
 
 }
 
-.header-filter-list{
+.header-filter-list {
   position: fixed;
   top: 0;
   left: 0;
@@ -100,7 +100,7 @@
   font-size: 20px;
 }
 
-.item-garage{
+.item-garage {
   margin-right: 10px;
 }
 
@@ -197,10 +197,9 @@
 
 .category-car {
   padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    margin-top: 20px;
-    margin-bottom: 70px;
-    padding-bottom: 200px;
+  padding-right: 0.75rem;
+  margin-top: 20px;
+  padding-bottom: 80px;
 }
 
 
@@ -313,7 +312,7 @@
   font-weight: 300;
 }
 
-.image-item-garage{
+.image-item-garage {
   width: 40px;
   height: 40px;
 }

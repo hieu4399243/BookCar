@@ -31,24 +31,26 @@ interface ItemProps {
 }
 
 const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
-  const [heartSelected, setHeartSelected] = useState<number | null>(null);
+  const [heartSelected, setHeartSelected] = useState<number[]>([]);
   const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [itemsToShow, setItemsToShow] = useState<number>(10);
 
-
   useEffect(() => {
-    console.log(filteredTrips.length);
     setPrevFilteredTrips(filteredTrips.slice(0, itemsToShow));
   }, [filteredTrips, itemsToShow]);
 
   const changeHeart = (index: number) => {
-    if (heartSelected === index) {
-      setHeartSelected(null);
+    const selectedIndex = heartSelected.indexOf(index);
+    if (selectedIndex === -1) {
+      setHeartSelected([...heartSelected, index]);
     } else {
-      setHeartSelected(index);
+      const updatedHeartSelected = [...heartSelected];
+      updatedHeartSelected.splice(selectedIndex, 1);
+      setHeartSelected(updatedHeartSelected);
     }
   };
+  
 
   const fetchMoreData = () => {
     if (!hasMore) return;
@@ -59,12 +61,14 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
 
   return (
     <div>
-      <InfiniteScroll style={{overflow: "hidden"}}
+      <InfiniteScroll
+        style={{ overflow: "hidden" }}
         dataLength={prevFilteredTrips.length}
         next={fetchMoreData}
         hasMore={hasMore}
         loader={<h4></h4>}
-        endMessage={<p>Không tìm thấy chuyến xe</p>}      >
+        endMessage={<p>Không tìm thấy chuyến xe</p>}
+      >
         {prevFilteredTrips.map((item, index) => (
           <div key={index} className="list-travel">
             <div className="item-travel">
@@ -119,7 +123,7 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
                       <img
                         className="heart-rating"
                         src={
-                          heartSelected === index ? ic_heart_selected : ic_heart
+                          heartSelected.includes(index) ? ic_heart_selected : ic_heart
                         }
                       />
                     </div>

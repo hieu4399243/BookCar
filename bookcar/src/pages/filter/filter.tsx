@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "../../components/spinner";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 interface Trip {
   uuid: string;
@@ -27,9 +28,9 @@ interface Trip {
 }
 
 const Filter = () => {
-  const filteredTrips = useSelector((state:any) => state.filteredTrips);
-  const [initialData, setInitialData] = useState<Trip[]>(filteredTrips
-  );
+  const location = useLocation();
+  const filteredTrips = useSelector((state: any) => state.filteredTrips);
+  const [initialData, setInitialData] = useState<Trip[]>(filteredTrips);
   const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [sortDirectionDeparture, setSortDirectionDeparture] = useState<
@@ -43,6 +44,7 @@ const Filter = () => {
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedButton, setSelectedButton] = useState<string>("");
+ 
 
   useEffect(() => {
     if (filteredTrips) {
@@ -51,7 +53,6 @@ const Filter = () => {
       }, 2000);
     }
   }, []);
-
 
   const sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
     const dateComparison = a.pick_up_date.localeCompare(b.pick_up_date);
@@ -148,12 +149,9 @@ const Filter = () => {
 
   return (
     <div>
-      
       <div
         className={
-          !loading
-            ? "header-filter-list"
-            : "header-filter-list overlay-content"
+          !loading ? "header-filter-list" : "header-filter-list overlay-content"
         }
       >
         <div className="flex p-5 bg-white items-center">
@@ -231,13 +229,16 @@ const Filter = () => {
               ))}
           </button>
 
-          <Link className="filter-icon" to={"/list"}>
+          <Link
+            className="filter-icon"
+            to={"/list"}
+          >
             <button>Lọc</button>
             <img src={ic_filter_white} alt="Filter" />
           </Link>
         </div>
       </div>
-      
+
       {!loading && (
         <div className={!loading ? "main-list-filter" : "main-list-filter"}>
           <Item filteredTrips={filtered} />
