@@ -37,7 +37,9 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [itemsToShow, setItemsToShow] = useState<number>(10);
 
   useEffect(() => {
-    setPrevFilteredTrips(filteredTrips.slice(0, itemsToShow));
+    if (Array.isArray(filteredTrips)) { 
+      setPrevFilteredTrips(filteredTrips.slice(0, itemsToShow));
+    }
   }, [filteredTrips, itemsToShow]);
 
   const changeHeart = (index: number) => {

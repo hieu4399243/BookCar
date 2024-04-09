@@ -28,8 +28,8 @@ interface Trip {
 }
 
 const Filter = () => {
-  const location = useLocation();
-  const filteredTrips = useSelector((state: any) => state.filteredTrips);
+  const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
+  console.log(filteredTrips);
   const [initialData, setInitialData] = useState<Trip[]>(filteredTrips);
   const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -43,8 +43,7 @@ const Filter = () => {
     "asc" | "desc" | null
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedButton, setSelectedButton] = useState<string>("");
- 
+  const [selectedButton, setSelectedButton] = useState<string>(""); 
 
   useEffect(() => {
     if (filteredTrips) {

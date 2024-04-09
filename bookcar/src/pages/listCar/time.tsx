@@ -8,8 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setFilteredTrips } from "../../features/slices/filterTripSlice";
-import { useLocation } from "react-router-dom";
+import { setAppliedFilter, setFilteredTrips } from "../../features/slices/filterTripSlice";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
@@ -35,7 +34,9 @@ export default function Time() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const filteredTrips = useSelector((state: any) => state.filteredTrips);
+  const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
+  const appliedFilter = useSelector((state: any) => state.filteredTrips.appliedFilter);
+  console.log(appliedFilter);
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
@@ -43,7 +44,6 @@ export default function Time() {
 
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();
-
 
   data.json.coreData.data.forEach((trip: Trip) => {
     const transportName = trip.transport_information.name;
@@ -59,6 +59,16 @@ export default function Time() {
   const allVehicleNames = Array.from(
     new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
   );
+
+  useEffect(() => {
+    if(appliedFilter){
+      setSelectedTime(appliedFilter.selectedTime);
+      console.log(selectedTime);
+      setPriceRange(appliedFilter.priceRange);
+      setVehicleCheckboxes(appliedFilter.vehicleCheckboxes);
+      setGarageCheckboxes(appliedFilter.garageCheckboxes);
+    }
+  }, [appliedFilter])
 
   useEffect(() => {
     dispatch(setFilteredTrips(groupedTripsLength));
@@ -80,7 +90,8 @@ export default function Time() {
       return (
         trip.discount_amount >= priceRange[0] &&
         trip.discount_amount <= priceRange[1] &&
-        (vehicleCheckboxes.length === 0 || vehicleCheckboxes.includes(trip.vehicle_name)) &&
+        (vehicleCheckboxes.length === 0 ||
+          vehicleCheckboxes.includes(trip.vehicle_name)) &&
         (garageCheckboxes.length === 0 ||
           garageCheckboxes.includes(trip.transport_information.name))
       );
@@ -125,7 +136,7 @@ export default function Time() {
     let filtered;
     if (updatedVehicleCheckboxes.length > 0) {
       filtered = groupedTripsLength.filter((trip: Trip) =>
-      updatedVehicleCheckboxes.includes(trip.vehicle_name)
+        updatedVehicleCheckboxes.includes(trip.vehicle_name)
       );
     } else {
       filtered = groupedTripsLength;
@@ -165,6 +176,13 @@ export default function Time() {
   };
 
   const applyFilters = () => {
+    const appliedFilters = {
+        selectedTime: selectedTime,
+        priceRange: priceRange,
+        vehicleCheckboxes: vehicleCheckboxes,
+        garageCheckboxes: garageCheckboxes,
+    };
+    dispatch(setAppliedFilter(appliedFilters));
     navigate("/filter");
   };
 
@@ -273,7 +291,9 @@ export default function Time() {
                       <div>
                         <img
                           src={
-                            vehicleCheckboxes.includes(name) ? ic_selected : ic_select
+                            vehicleCheckboxes.includes(name)
+                              ? ic_selected
+                              : ic_select
                           }
                           onClick={() => handleCheckBox(name)}
                         />

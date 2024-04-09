@@ -1,17 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
 const filteredTripsSlice = createSlice({
     name: "filteredTrips",
-    initialState: [],
+    initialState: {
+      filteredTrips: [],
+      appliedFilter: null
+    },
     reducers: {
       setFilteredTrips: (state, action) => {
-        return action.payload;
+        state.filteredTrips = action.payload;
       },
+      setAppliedFilter: (state, action) =>{
+        state.appliedFilter = action.payload;
+      }
     },
   });
   
 
-export const { setFilteredTrips } = filteredTripsSlice.actions;
+export const { setFilteredTrips, setAppliedFilter } = filteredTripsSlice.actions;
 export default filteredTripsSlice.reducer;
