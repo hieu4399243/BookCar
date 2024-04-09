@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NumberWithComans } from "../../utils/numberWithComas";
 import Slider from "@mui/material/Slider";
 
@@ -8,9 +8,11 @@ interface PriceProps {
 }
 
 const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => { 
+
   const handleChange = (event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
   };
+
 
   const formatPrice = (price: number | undefined) => {
     return price !== undefined ? NumberWithComans(price) + "đ" : "";
@@ -26,7 +28,6 @@ const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
         <Slider
           value={priceRange}
           onChange={handleChange}
-          valueLabelDisplay="auto"
           min={0}
           max={3000000}
         />

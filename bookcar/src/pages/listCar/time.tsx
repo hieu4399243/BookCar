@@ -41,14 +41,16 @@ export default function Time() {
     (state: any) => state.filteredTrips.filteredTrips
   );
   const appliedFilter = useSelector(
-    (state: any) => state.filteredTrips.appliedFilter
+    (state: any) => state.filteredTrips.appliedFilter.filter
   );
+  
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
   const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
   const [tempFilteredTrips, setTempFilteredTrips] =
     useState(groupedTripsLength);
+
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();
 
@@ -78,7 +80,6 @@ export default function Time() {
 
   useEffect(() => {
     let currentFilteredTrips = data.json.coreData.data;
-
     if (selectedTime.length > 0) {
       currentFilteredTrips = selectedTime.reduce(
         (acc: Trip[], time: string) => {
@@ -99,7 +100,12 @@ export default function Time() {
       );
     });
 
-    setTempFilteredTrips(currentFilteredTrips);
+    const timerId = setTimeout(() =>{
+      setTempFilteredTrips(currentFilteredTrips);
+    }, 500);
+
+    return () => clearTimeout(timerId);
+
   }, [
     selectedTime,
     priceRange,
@@ -151,7 +157,6 @@ export default function Time() {
       vehicleCheckboxes: vehicleCheckboxes,
       garageCheckboxes: garageCheckboxes,
     };
-  
     dispatch(setFilteredTrips(tempFilteredTrips));
     dispatch(setAppliedFilter(appliedFilters));
     navigate("/filter");

@@ -29,7 +29,10 @@ interface Trip {
 
 const Filter = () => {
   const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
-  console.log(filteredTrips);
+  const appliedFilter = useSelector(
+    (state: any) => state.filteredTrips.appliedFilter.filterApplied
+  );
+  console.log(appliedFilter);
   const [initialData, setInitialData] = useState<Trip[]>(filteredTrips);
   const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -229,7 +232,7 @@ const Filter = () => {
           </button>
 
           <Link
-            className="filter-icon"
+            className={`${appliedFilter ? "filter-selected" : "filter-icon"}`}
             to={"/list"}
           >
             <button>Lọc</button>

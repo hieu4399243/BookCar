@@ -202,6 +202,19 @@
   padding-bottom: 80px;
 }
 
+.filter-selected {
+  background-color: #4465f0;
+    color: white;
+    display: flex;
+    align-items: center;
+    flex: 0.7 1;
+    justify-content: space-around;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0px 5px 10px 5px;
+    font-weight: 300;
+}
+
 
 .footer-list {
   display: flex;
@@ -286,7 +299,6 @@
 .filter-button {
   display: flex;
   align-items: center;
-  width: 430px;
 }
 
 .filter-button .button {
