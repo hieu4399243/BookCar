@@ -8,7 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setAppliedFilter, setFilteredTrips } from "../../features/slices/filterTripSlice";
+import {
+  setAppliedFilter,
+  setFilteredTrips,
+} from "../../features/slices/filterTripSlice";
 
 const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
 const groupedTripsLength: any = data.json.coreData.data;
@@ -34,14 +37,18 @@ export default function Time() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
-  const appliedFilter = useSelector((state: any) => state.filteredTrips.appliedFilter);
-  console.log(appliedFilter);
+  const filteredTrips = useSelector(
+    (state: any) => state.filteredTrips.filteredTrips
+  );
+  const appliedFilter = useSelector(
+    (state: any) => state.filteredTrips.appliedFilter
+  );
   const [priceRange, setPriceRange] = useState([0, 3000000]);
   const [clickedOption, setClickedOption] = useState<string | null>(null);
   const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
   const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
-
+  const [tempFilteredTrips, setTempFilteredTrips] =
+    useState(groupedTripsLength);
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();
 
@@ -61,18 +68,13 @@ export default function Time() {
   );
 
   useEffect(() => {
-    if(appliedFilter){
+    if (appliedFilter) {
       setSelectedTime(appliedFilter.selectedTime);
-      console.log(selectedTime);
       setPriceRange(appliedFilter.priceRange);
       setVehicleCheckboxes(appliedFilter.vehicleCheckboxes);
       setGarageCheckboxes(appliedFilter.garageCheckboxes);
     }
-  }, [appliedFilter])
-
-  useEffect(() => {
-    dispatch(setFilteredTrips(groupedTripsLength));
-  }, [dispatch]);
+  }, [appliedFilter]);
 
   useEffect(() => {
     let currentFilteredTrips = data.json.coreData.data;
@@ -97,14 +99,13 @@ export default function Time() {
       );
     });
 
-    dispatch(setFilteredTrips(currentFilteredTrips));
+    setTempFilteredTrips(currentFilteredTrips);
   }, [
     selectedTime,
     priceRange,
     garageCheckboxes,
     vehicleCheckboxes,
     groupedTrips,
-    dispatch,
   ]);
 
   const handleFilter = (
@@ -116,54 +117,22 @@ export default function Time() {
       : [...selectedTime, time];
     setSelectedTime(updateSelectedTime);
     setClickedOption(time === clickedOption ? null : time);
-    const tripsInSelectedTime = groupedTrips[time] || [];
-    dispatch(setFilteredTrips(tripsInSelectedTime));
   };
 
   const isOptionSelected = (time: string) => selectedTime.includes(time);
 
   const handleCheckBox = (name: string) => {
-    let updatedVehicleCheckboxes: string[];
-    if (vehicleCheckboxes.includes(name)) {
-      updatedVehicleCheckboxes = vehicleCheckboxes.filter(
-        (checkbox) => checkbox !== name
-      );
-    } else {
-      updatedVehicleCheckboxes = [...vehicleCheckboxes, name];
-    }
+    const updatedVehicleCheckboxes = vehicleCheckboxes.includes(name)
+      ? vehicleCheckboxes.filter((checkbox) => checkbox !== name)
+      : [...vehicleCheckboxes, name];
     setVehicleCheckboxes(updatedVehicleCheckboxes);
-
-    let filtered;
-    if (updatedVehicleCheckboxes.length > 0) {
-      filtered = groupedTripsLength.filter((trip: Trip) =>
-        updatedVehicleCheckboxes.includes(trip.vehicle_name)
-      );
-    } else {
-      filtered = groupedTripsLength;
-    }
-    dispatch(setFilteredTrips(filtered));
   };
 
   const handleCheckBoxByGarage = (name: string) => {
-    let updatedGarageCheckboxes: string[];
-    if (garageCheckboxes.includes(name)) {
-      updatedGarageCheckboxes = garageCheckboxes.filter(
-        (checkbox) => checkbox !== name
-      );
-    } else {
-      updatedGarageCheckboxes = [...garageCheckboxes, name];
-    }
+    const updatedGarageCheckboxes = garageCheckboxes.includes(name)
+      ? garageCheckboxes.filter((checkbox) => checkbox !== name)
+      : [...garageCheckboxes, name];
     setGarageCheckboxes(updatedGarageCheckboxes);
-
-    let filtered;
-    if (updatedGarageCheckboxes.length > 0) {
-      filtered = groupedTripsLength.filter((trip: Trip) =>
-        updatedGarageCheckboxes.includes(trip.transport_information.name)
-      );
-    } else {
-      filtered = groupedTripsLength;
-    }
-    dispatch(setFilteredTrips(filtered));
   };
 
   const handleCancel = () => {
@@ -177,11 +146,13 @@ export default function Time() {
 
   const applyFilters = () => {
     const appliedFilters = {
-        selectedTime: selectedTime,
-        priceRange: priceRange,
-        vehicleCheckboxes: vehicleCheckboxes,
-        garageCheckboxes: garageCheckboxes,
+      selectedTime: selectedTime,
+      priceRange: priceRange,
+      vehicleCheckboxes: vehicleCheckboxes,
+      garageCheckboxes: garageCheckboxes,
     };
+  
+    dispatch(setFilteredTrips(tempFilteredTrips));
     dispatch(setAppliedFilter(appliedFilters));
     navigate("/filter");
   };
@@ -310,8 +281,7 @@ export default function Time() {
             Xoá lọc
           </button>
           <button className="button-right" onClick={applyFilters}>
-            Áp dụng(
-            {filteredTrips && filteredTrips.length ? filteredTrips.length : 0})
+            Áp dụng({tempFilteredTrips && tempFilteredTrips.length ? tempFilteredTrips.length : 0})
           </button>
         </div>
       </div>
