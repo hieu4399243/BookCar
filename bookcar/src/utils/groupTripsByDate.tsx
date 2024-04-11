@@ -38,3 +38,8 @@ export function dateTime(dateString: string) {
   const convertedDateString = dateString.split("-").join("/");
   return convertedDateString;
 }
+
+
+export function NumberWithComans(number: number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

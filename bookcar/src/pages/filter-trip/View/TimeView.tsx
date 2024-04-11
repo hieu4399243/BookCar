@@ -1,55 +1,30 @@
 import React, { useState, useEffect } from "react";
-import data from "../../constants/locchuyenxe.json";
-import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
-import Price from "./price";
-import ic_select from "../../assets/images/ic_select.svg";
-import ic_selected from "../../assets/images/ic_selected.svg";
+import data from "../../../constants/locchuyenxe.json";
+import PriceView from "./PriceView";
+import ic_select from "../../../assets/images/ic_select.svg";
+import ic_selected from "../../../assets/images/ic_selected.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setAppliedFilter,
-  setFilteredTrips,
-} from "../../features/slices/filterTripSlice";
+import { Trip } from "../Models/TripModels";
+import { useTimeViewModel } from "../ViewModels/TimeViewModels";
 
-const groupedTrips: any = groupTripsByTimeOfDate(data.json.coreData.data);
-const groupedTripsLength: any = data.json.coreData.data;
 
-interface Trip {
-  uuid: string;
-  name: string;
-  departure_time: string;
-  pick_up_date: string;
-  vehicle_name: string;
-  duration_in_min: number;
-  merchant_start_point_name: string;
-  merchant_end_point_name: string;
-  transport_information: {
-    image_url: string;
-    rating: string;
-    name: string;
-  };
-  discount_amount: number;
-}
-
-export default function Time() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const filteredTrips = useSelector(
-    (state: any) => state.filteredTrips.filteredTrips
-  );
-  const appliedFilter = useSelector(
-    (state: any) => state.filteredTrips.appliedFilter.filter
-  );
-  
-  const [priceRange, setPriceRange] = useState([0, 3000000]);
-  const [clickedOption, setClickedOption] = useState<string | null>(null);
-  const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
-  const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
-  const [tempFilteredTrips, setTempFilteredTrips] =
-    useState(groupedTripsLength);
+export default function TimeView() {
+  const {
+    selectedTime,
+    setSelectedTime,
+    priceRange,
+    setPriceRange,
+    vehicleCheckboxes,
+    setVehicleCheckboxes,
+    garageCheckboxes,
+    setGarageCheckboxes,
+    groupedTripsLength,
+    applyFilters,
+    tempFilteredTrips,
+    handleCancel,
+    handleFilter
+  } = useTimeViewModel();
 
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();
@@ -69,62 +44,6 @@ export default function Time() {
     new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
   );
 
-  useEffect(() => {
-    if (appliedFilter) {
-      setSelectedTime(appliedFilter.selectedTime);
-      setPriceRange(appliedFilter.priceRange);
-      setVehicleCheckboxes(appliedFilter.vehicleCheckboxes);
-      setGarageCheckboxes(appliedFilter.garageCheckboxes);
-    }
-  }, [appliedFilter]);
-
-  useEffect(() => {
-    let currentFilteredTrips = data.json.coreData.data;
-    if (selectedTime.length > 0) {
-      currentFilteredTrips = selectedTime.reduce(
-        (acc: Trip[], time: string) => {
-          return acc.concat(groupedTrips[time] || []);
-        },
-        []
-      );
-    }
-
-    currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
-      return (
-        trip.discount_amount >= priceRange[0] &&
-        trip.discount_amount <= priceRange[1] &&
-        (vehicleCheckboxes.length === 0 ||
-          vehicleCheckboxes.includes(trip.vehicle_name)) &&
-        (garageCheckboxes.length === 0 ||
-          garageCheckboxes.includes(trip.transport_information.name))
-      );
-    });
-
-    const timerId = setTimeout(() =>{
-      setTempFilteredTrips(currentFilteredTrips);
-    }, 500);
-
-    return () => clearTimeout(timerId);
-
-  }, [
-    selectedTime,
-    priceRange,
-    garageCheckboxes,
-    vehicleCheckboxes,
-    groupedTrips,
-  ]);
-
-  const handleFilter = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    time: string
-  ) => {
-    const updateSelectedTime = selectedTime.includes(time)
-      ? selectedTime.filter((t) => t !== time)
-      : [...selectedTime, time];
-    setSelectedTime(updateSelectedTime);
-    setClickedOption(time === clickedOption ? null : time);
-  };
-
   const isOptionSelected = (time: string) => selectedTime.includes(time);
 
   const handleCheckBox = (name: string) => {
@@ -139,27 +58,6 @@ export default function Time() {
       ? garageCheckboxes.filter((checkbox) => checkbox !== name)
       : [...garageCheckboxes, name];
     setGarageCheckboxes(updatedGarageCheckboxes);
-  };
-
-  const handleCancel = () => {
-    setClickedOption(null);
-    setSelectedTime([]);
-    dispatch(setFilteredTrips(groupedTripsLength));
-    setPriceRange([0, 3000000]);
-    setVehicleCheckboxes([]);
-    setGarageCheckboxes([]);
-  };
-
-  const applyFilters = () => {
-    const appliedFilters = {
-      selectedTime: selectedTime,
-      priceRange: priceRange,
-      vehicleCheckboxes: vehicleCheckboxes,
-      garageCheckboxes: garageCheckboxes,
-    };
-    dispatch(setFilteredTrips(tempFilteredTrips));
-    dispatch(setAppliedFilter(appliedFilters));
-    navigate("/filter");
   };
 
   return (
@@ -210,7 +108,7 @@ export default function Time() {
           </div>
         </div>
 
-        <Price setPriceRange={setPriceRange} priceRange={priceRange} />
+        <PriceView setPriceRange={setPriceRange} priceRange={priceRange} />
 
         <div className="garage">
           <div>

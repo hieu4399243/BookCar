@@ -6,8 +6,8 @@ import {
   Routes,
 } from "react-router-dom";
 import Main from "./pages/home/main";
-import Filter from "./pages/filter/filter";
-import List from "./pages/listCar/list";
+import Filter from "./pages/list-car/filter";
+import ListView from "./pages/filter-trip/View/ListView";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/filter" element={<Filter />} /> 
-        <Route path="/list" element={<List />} />
+        <Route path="/list" element={<ListView />} />
       </Routes>
     </div>
   );

@@ -4,7 +4,7 @@ import { dateTime } from "../../utils/groupTripsByDate";
 import ic_arrow from "../../assets/images/ic_arrow.svg";
 import ic_heart from "../../assets/images/ic_heart.svg";
 import ic_heart_selected from "../../assets/images/ic_heart_selected.svg";
-import { NumberWithComans } from "../../utils/numberWithComas";
+import { NumberWithComans } from "../../utils/groupTripsByDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import InfiniteScroll from "react-infinite-scroll-component";

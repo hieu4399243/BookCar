@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NumberWithComans } from "../../utils/numberWithComas";
+import { NumberWithComans } from "../../../utils/groupTripsByDate";
 import Slider from "@mui/material/Slider";
 
 interface PriceProps {
@@ -7,7 +7,7 @@ interface PriceProps {
   priceRange: number[];
 }
 
-const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => { 
+const PriceView: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => { 
 
   const handleChange = (event: Event, newValue: number | number[]) => {
     setPriceRange(newValue as number[]);
@@ -40,4 +40,4 @@ const Price: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
   );
 };
 
-export default Price;
+export default PriceView;
