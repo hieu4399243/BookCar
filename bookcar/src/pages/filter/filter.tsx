@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import Spinner from "../../components/spinner";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 
 interface Trip {
   uuid: string;
