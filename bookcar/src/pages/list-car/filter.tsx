@@ -6,8 +6,9 @@ import Item from "./item";
 import Slider from "./slider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import Spinner from "../../components/spinner";
 import { useSelector } from "react-redux";
+import data from "../../constants/locchuyenxe.json";
+
 
 interface Trip {
   uuid: string;
@@ -27,11 +28,11 @@ interface Trip {
 }
 
 const Filter = () => {
+  const trip = data.json.coreData.data;
   const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
   const appliedFilter = useSelector(
     (state: any) => state.filteredTrips.appliedFilter.filterApplied
   );
-  console.log(appliedFilter);
   const [initialData, setInitialData] = useState<Trip[]>(filteredTrips);
   const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -44,16 +45,15 @@ const Filter = () => {
   const [sortDirectionDiscount, setSortDirectionDiscount] = useState<
     "asc" | "desc" | null
   >(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const [selectedButton, setSelectedButton] = useState<string>(""); 
 
   useEffect(() => {
-    if (filteredTrips) {
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+    if (appliedFilter === true) {
+      setFiltered(filteredTrips);
+    } else {
+      setFiltered(trip);
     }
-  }, []);
+  }, [appliedFilter, filteredTrips, trip]);
 
   const sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
     const dateComparison = a.pick_up_date.localeCompare(b.pick_up_date);
@@ -94,11 +94,9 @@ const Filter = () => {
       );
     }
     setFiltered(sortedTrips);
-    setLoading(false);
   };
 
   const handleSort = (field: string) => {
-    setLoading(true);
     let newSortDirection: "asc" | "desc" | null = null;
 
     let sortedTrips: Trip[] = [...filtered];
@@ -145,14 +143,16 @@ const Filter = () => {
     setSortDirectionDeparture(null);
     setSortDirectionRating(null);
     setSortDirectionDiscount(null);
-    setFiltered(initialData);
+    setFiltered(trip);
   };
+
+  console.log(filtered);
 
   return (
     <div>
       <div
         className={
-          !loading ? "header-filter-list" : "header-filter-list overlay-content"
+           "header-filter-list"
         }
       >
         <div className="flex p-5 bg-white items-center">
@@ -240,13 +240,11 @@ const Filter = () => {
         </div>
       </div>
 
-      {!loading && (
-        <div className={!loading ? "main-list-filter" : "main-list-filter"}>
+      
+        <div className= "main-list-filter" >
           <Item filteredTrips={filtered} />
         </div>
-      )}
 
-      {loading && <Spinner />}
     </div>
   );
 };

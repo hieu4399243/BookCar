@@ -10,12 +10,9 @@ import { useNavigate } from "react-router-dom";
 
 
 export function useTimeViewModel() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const filteredTrips = useSelector(
-    (state: any) => state.filteredTrips.filteredTrips
-  );
   const appliedFilter = useSelector(
     (state: any) => state.filteredTrips.appliedFilter.filter
   );

@@ -53,14 +53,6 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
       setHeartSelected(updatedHeartSelected);
     }
   };
-  
-
-  // const fetchMoreData = () => {
-  //   if (!hasMore) return;
-  //   setTimeout(() => {
-  //     setItemsToShow(itemsToShow + 10);
-  //   }, 2000);
-  // };
 
   const loadMoreItems = () => {
     if (prevFilteredTrips.length < filteredTrips.length) {
@@ -93,7 +85,7 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
 
   return (
     <div>
-      <div ref={containerRef} style={{ overflowY: 'scroll', maxHeight: '750px' }}>
+      <div ref={containerRef} style={{ overflowY: 'scroll', maxHeight: '800px' }}>
         {prevFilteredTrips.map((item, index) => (
           <div key={index} className="list-travel">
             <div className="item-travel">

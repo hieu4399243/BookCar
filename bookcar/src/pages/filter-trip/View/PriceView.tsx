@@ -15,8 +15,14 @@ const PriceView: React.FC<PriceProps> = ({ setPriceRange, priceRange }) => {
 
 
   const formatPrice = (price: number | undefined) => {
-    return price !== undefined ? NumberWithComans(price) + "đ" : "";
+    if (price !== undefined) {
+      const roundedPrice = Math.round(price / 10000) * 10000;
+      return NumberWithComans(roundedPrice) + "đ";
+    } else {
+      return "";
+    }
   };
+  
 
   return (
     <div>
