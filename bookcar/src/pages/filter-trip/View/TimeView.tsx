@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import data from "../../../constants/locchuyenxe.json";
 import PriceView from "./PriceView";
-import ic_select from "../../../assets/images/ic_select.svg";
-import ic_selected from "../../../assets/images/ic_selected.svg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { Trip } from "../Models/TripModels";
 import { useTimeViewModel } from "../ViewModels/TimeViewModels";
 import TimeOption from "../../../components/TimeOption";
+import GarageListItem from "../../../components/list/GarageListItem";
+import VehicleListItem from "../../../components/list/VehicleListItem";
 
 export default function TimeView() {
   const {
@@ -46,7 +44,7 @@ export default function TimeView() {
 
   const isOptionSelected = (time: string) => selectedTime.includes(time);
 
-  const handleCheckBox = (name: string) => {
+  const handleCheckBoxByVehicle = (name: string) => {
     const updatedVehicleCheckboxes = vehicleCheckboxes.includes(name)
       ? vehicleCheckboxes.filter((checkbox) => checkbox !== name)
       : [...vehicleCheckboxes, name];
@@ -93,31 +91,14 @@ export default function TimeView() {
           <div>
             <div className="garage-list">
               <ul>
-                {uniqueTransportNames.map((item, index) => {
-                  return (
-                    <li key={index} className="garage-list-item">
-                      <div className="item-list-car">
-                        <div className="item-garage">
-                          <img
-                            src={item.imageUrl}
-                            className="image-item-garage"
-                          />
-                        </div>
-                        <p>{item.name}</p>
-                      </div>
-                      <div>
-                        <img
-                          src={
-                            garageCheckboxes.includes(item.name)
-                              ? ic_selected
-                              : ic_select
-                          }
-                          onClick={() => handleCheckBoxByGarage(item.name)}
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
+                {uniqueTransportNames.map((item, index) => (
+                  <GarageListItem
+                    key={index}
+                    item={item}
+                    isChecked={garageCheckboxes.includes(item.name)}
+                    handleCheckBox={handleCheckBoxByGarage}
+                  />
+                ))}
               </ul>
             </div>
           </div>
@@ -129,28 +110,14 @@ export default function TimeView() {
           <div>
             <div className="vertical-list">
               <ul>
-                {allVehicleNames.map((name, index) => {
-                  return (
-                    <li key={name} className="garage-list-item">
-                      <div className="item-list-car">
-                        <div className="item-car">
-                          <FontAwesomeIcon icon={faBusSimple} />
-                        </div>
-                        <p>{name}</p>
-                      </div>
-                      <div>
-                        <img
-                          src={
-                            vehicleCheckboxes.includes(name)
-                              ? ic_selected
-                              : ic_select
-                          }
-                          onClick={() => handleCheckBox(name)}
-                        />
-                      </div>
-                    </li>
-                  );
-                })}
+                {allVehicleNames.map((name, index) => (
+                  <VehicleListItem 
+                    key={index}
+                    name={name}
+                    vehicleCheckboxes={vehicleCheckboxes.includes(name)}
+                    handleCheckBox={handleCheckBoxByVehicle}
+                    />
+                ))}
               </ul>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import data from "../../constants/locchuyenxe.json";
-
+import SortButton from "../../components/SortButton";
 
 interface Trip {
   uuid: string;
@@ -29,7 +29,9 @@ interface Trip {
 
 const Filter = () => {
   const trip = data.json.coreData.data;
-  const filteredTrips = useSelector((state: any) => state.filteredTrips.filteredTrips);
+  const filteredTrips = useSelector(
+    (state: any) => state.filteredTrips.filteredTrips
+  );
   const appliedFilter = useSelector(
     (state: any) => state.filteredTrips.appliedFilter.filterApplied
   );
@@ -45,7 +47,7 @@ const Filter = () => {
   const [sortDirectionDiscount, setSortDirectionDiscount] = useState<
     "asc" | "desc" | null
   >(null);
-  const [selectedButton, setSelectedButton] = useState<string>(""); 
+  const [selectedButton, setSelectedButton] = useState<string>("");
 
   useEffect(() => {
     if (appliedFilter === true) {
@@ -143,15 +145,36 @@ const Filter = () => {
     setSortDirectionDeparture(null);
     setSortDirectionRating(null);
     setSortDirectionDiscount(null);
-    setFiltered(trip);
+    if (appliedFilter === true) {
+      setFiltered(filteredTrips);
+    } else {
+      setFiltered(trip);
+    }
   };
+
+  const buttonConfigs = [
+    {
+      label: "Giờ chạy",
+      field: "departure_time",
+      selected: selectedFilters.includes("departure_time"),
+      sortDirection: sortDirectionDeparture,
+    },
+    {
+      label: "Giá vé",
+      field: "discount_amount",
+      selected: selectedFilters.includes("discount_amount"),
+      sortDirection: sortDirectionDiscount,
+    },
+    {
+      label: "Đánh giá",
+      field: "rating",
+      selected: selectedFilters.includes("rating"),
+      sortDirection: sortDirectionRating,
+    },
+  ];
   return (
     <div>
-      <div
-        className={
-           "header-filter-list"
-        }
-      >
+      <div className={"header-filter-list"}>
         <div className="flex p-5 bg-white items-center">
           <div style={{ marginRight: "5px" }}>
             <Link to={"/"}>
@@ -175,57 +198,15 @@ const Filter = () => {
           <Slider />
         </div>
         <div className="filter-button">
-          <button
-            className={`${
-              selectedFilters.includes("departure_time") &&
-              selectedButton === "sortDirectionDeparture"
-                ? "selected-filter"
-                : "button"
-            }`}
-            onClick={() => handleSort("departure_time")}
-          >
-            Giờ chạy{" "}
-            {selectedButton === "sortDirectionDeparture" &&
-              (sortDirectionDeparture === "asc" ? (
-                <FontAwesomeIcon icon={faArrowUp} />
-              ) : (
-                <FontAwesomeIcon icon={faArrowDown} />
-              ))}
-          </button>
-          <button
-            className={`${
-              selectedFilters.includes("discount_amount") &&
-              selectedButton === "sortDirectionDiscount"
-                ? "selected-filter"
-                : "button"
-            }`}
-            onClick={() => handleSort("discount_amount")}
-          >
-            Giá vé{" "}
-            {selectedButton === "sortDirectionDiscount" &&
-              (sortDirectionDiscount === "asc" ? (
-                <FontAwesomeIcon icon={faArrowUp} />
-              ) : (
-                <FontAwesomeIcon icon={faArrowDown} />
-              ))}
-          </button>
-          <button
-            className={`${
-              selectedFilters.includes("rating") &&
-              selectedButton === "sortDirectionRating"
-                ? "selected-filter"
-                : "button"
-            }`}
-            onClick={() => handleSort("rating")}
-          >
-            Đánh giá{" "}
-            {selectedButton === "sortDirectionRating" &&
-              (sortDirectionRating === "asc" ? (
-                <FontAwesomeIcon icon={faArrowUp} />
-              ) : (
-                <FontAwesomeIcon icon={faArrowDown} />
-              ))}
-          </button>
+          {buttonConfigs.map((item, index) => (
+            <SortButton
+              key={index}
+              label={item.label}
+              selected={item.selected}
+              onClick={() => handleSort(item.field)}
+              sortDirection={item.sortDirection}
+            />
+          ))}
 
           <Link
             className={`${appliedFilter ? "filter-selected" : "filter-icon"}`}
@@ -237,11 +218,9 @@ const Filter = () => {
         </div>
       </div>
 
-      
-        <div className= "main-list-filter" >
-          <Item filteredTrips={filtered} />
-        </div>
-
+      <div className="main-list-filter">
+        <Item filteredTrips={filtered} />
+      </div>
     </div>
   );
 };
