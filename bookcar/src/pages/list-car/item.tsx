@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { formatDuration } from "../../utils/groupTripsByDate";
 import { dateTime } from "../../utils/groupTripsByDate";
 import ic_arrow from "../../assets/images/ic_arrow.svg";
@@ -7,7 +7,6 @@ import ic_heart_selected from "../../assets/images/ic_heart_selected.svg";
 import { NumberWithComans } from "../../utils/groupTripsByDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 interface Trip {
   uuid: string;
@@ -35,6 +34,8 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [itemsToShow, setItemsToShow] = useState<number>(10);
+  const containerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     if (Array.isArray(filteredTrips)) { 
@@ -54,23 +55,45 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   };
   
 
-  const fetchMoreData = () => {
-    if (!hasMore) return;
-    setTimeout(() => {
+  // const fetchMoreData = () => {
+  //   if (!hasMore) return;
+  //   setTimeout(() => {
+  //     setItemsToShow(itemsToShow + 10);
+  //   }, 2000);
+  // };
+
+  const loadMoreItems = () => {
+    if (prevFilteredTrips.length < filteredTrips.length) {
       setItemsToShow(itemsToShow + 10);
-    }, 2000);
+    }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (containerRef.current) {
+        const { scrollTop, clientHeight, scrollHeight } = containerRef.current;
+        if (scrollTop + clientHeight >= scrollHeight) {
+          loadMoreItems();
+        }
+      }
+    };
+
+    if (containerRef.current) {
+      containerRef.current.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [loadMoreItems]);
+
+  
 
   return (
     <div>
-      <InfiniteScroll
-        style={{ overflow: "hidden" }}
-        dataLength={prevFilteredTrips.length}
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={<h4></h4>}
-        endMessage={<p>Không tìm thấy chuyến xe</p>}
-      >
+      <div ref={containerRef} style={{ overflowY: 'scroll', maxHeight: '750px' }}>
         {prevFilteredTrips.map((item, index) => (
           <div key={index} className="list-travel">
             <div className="item-travel">
@@ -153,7 +176,7 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
             </div>
           </div>
         ))}
-      </InfiniteScroll>
+      </div>
     </div>
   );
 };
