@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBusSimple } from "@fortawesome/free-solid-svg-icons";
 import { Trip } from "../Models/TripModels";
 import { useTimeViewModel } from "../ViewModels/TimeViewModels";
-
+import TimeOption from "../../../components/TimeOption";
 
 export default function TimeView() {
   const {
@@ -23,7 +23,7 @@ export default function TimeView() {
     applyFilters,
     tempFilteredTrips,
     handleCancel,
-    handleFilter
+    handleFilter,
   } = useTimeViewModel();
 
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
@@ -60,52 +60,28 @@ export default function TimeView() {
     setGarageCheckboxes(updatedGarageCheckboxes);
   };
 
+  const timeOptions: { time: string; label: string }[] = [
+    { time: "morning", label: "Sáng sớm" },
+    { time: "noon", label: "Buổi sáng" },
+    { time: "afternoon", label: "Buổi trưa" },
+    { time: "evening", label: "Buổi tối" },
+  ];
+
   return (
     <div className="">
       <div>
         <h2 className="px-5 pt-5 font-semibold">Thời gian khởi hành</h2>
 
         <div className="grid grid-cols-2 main-grid">
-          <div
-            className={`time-option ${
-              isOptionSelected("morning") ? "time-option-choose" : ""
-            }`}
-            onClick={(e) => handleFilter(e, "morning")}
-            data-time="morning"
-          >
-            <button className="font-normal text-[#a7a7a7]">Sáng sớm</button>
-            <p>0:00 - 6:00</p>
-          </div>
-          <div
-            className={`time-option ${
-              isOptionSelected("noon") ? "time-option-choose" : ""
-            }`}
-            onClick={(e) => handleFilter(e, "noon")}
-            data-time="noon"
-          >
-            <button className="font-normal text-[#a7a7a7]">Buổi sáng</button>
-            <p>6:01 - 12:00</p>
-          </div>
-          <div
-            className={`time-option ${
-              isOptionSelected("afternoon") ? "time-option-choose" : ""
-            }`}
-            onClick={(e) => handleFilter(e, "afternoon")}
-            data-time="afternoon"
-          >
-            <button className="font-normal text-[#a7a7a7]">Buổi trưa</button>
-            <p>12:01 - 18:00</p>
-          </div>
-          <div
-            className={`time-option ${
-              isOptionSelected("evening") ? "time-option-choose" : ""
-            }`}
-            onClick={(e) => handleFilter(e, "evening")}
-            data-time="evening"
-          >
-            <button className="font-normal text-[#a7a7a7]">Buổi tối</button>
-            <p>18:01 - 23:59</p>
-          </div>
+          {timeOptions.map(({ time, label }, index) => (
+            <TimeOption
+              key={index}
+              isSelected={isOptionSelected(time)}
+              time={time}
+              handleFilter={handleFilter}
+              label={label}
+            />
+          ))}
         </div>
 
         <PriceView setPriceRange={setPriceRange} priceRange={priceRange} />
@@ -184,7 +160,11 @@ export default function TimeView() {
             Xoá lọc
           </button>
           <button className="button-right" onClick={applyFilters}>
-            Áp dụng({tempFilteredTrips && tempFilteredTrips.length ? tempFilteredTrips.length : 0})
+            Áp dụng(
+            {tempFilteredTrips && tempFilteredTrips.length
+              ? tempFilteredTrips.length
+              : 0}
+            )
           </button>
         </div>
       </div>

@@ -145,9 +145,6 @@ const Filter = () => {
     setSortDirectionDiscount(null);
     setFiltered(trip);
   };
-
-  console.log(filtered);
-
   return (
     <div>
       <div
