@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import CarListItem from "../../components/list/CarListItem";
+import CarListItem from "../../components/List/CarListItem";
 
 interface Trip {
   uuid: string;
@@ -22,7 +22,7 @@ interface ItemProps {
   filteredTrips: Trip[];
 }
 
-const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
+const ListCar: React.FC<ItemProps> = ({ filteredTrips }) => {
   const [heartSelected, setHeartSelected] = useState<number[]>([]);
   const [prevFilteredTrips, setPrevFilteredTrips] = useState<Trip[]>([]);
   const [itemsToShow, setItemsToShow] = useState<number>(10);
@@ -92,4 +92,4 @@ const Item: React.FC<ItemProps> = ({ filteredTrips }) => {
   );
 };
 
-export default Item;
+export default ListCar;

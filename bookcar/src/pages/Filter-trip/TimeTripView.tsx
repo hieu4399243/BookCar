@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import data from "../../../constants/locchuyenxe.json";
-import PriceView from "./PriceView";
-import { Trip } from "../Models/TripModels";
-import { useTimeViewModel } from "../ViewModels/TimeViewModels";
-import TimeOption from "../../../components/TimeOption";
-import GarageListItem from "../../../components/list/GarageListItem";
-import VehicleListItem from "../../../components/list/VehicleListItem";
+import data from "../../constants/locchuyenxe.json";
+import PriceView from "./PriceTripView";
+import { Trip } from "../TripModels";
+import { useFilterTripModels } from "./FilterTripModels";
+import TimeOption from "../../components/TimeOption";
+import GarageListItem from "../../components/List/GarageListItem";
+import VehicleListItem from "../../components/List/VehicleListItem";
 
 export default function TimeView() {
   const {
@@ -22,7 +22,7 @@ export default function TimeView() {
     tempFilteredTrips,
     handleCancel,
     handleFilter,
-  } = useTimeViewModel();
+  } = useFilterTripModels();
 
   const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
   const seenTransportNames = new Set<string>();

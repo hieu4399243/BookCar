@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setFilteredTrips,setAppliedFilter
-} from "../../../stores/features/slices/filterTripSlice";
-import { groupTripsByTimeOfDate } from "../../../utils/groupTripsByDate";
-import data from "../../../constants/locchuyenxe.json";
-import { Trip } from "../Models/TripModels";
+} from "../../stores/Features/Slices/FilterTripSlice";
+import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
+import data from "../../constants/locchuyenxe.json";
+import { Trip } from "../TripModels";
 import { useNavigate } from "react-router-dom";
 
 
-export function useTimeViewModel() {
+export function useFilterTripModels() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
@@ -69,7 +69,7 @@ export function useTimeViewModel() {
   ]);
 
   const applyFilters = () => {
-    const appliedFilters = {
+      const appliedFilters = {
       selectedTime: selectedTime,
       priceRange: priceRange,
       vehicleCheckboxes: vehicleCheckboxes,

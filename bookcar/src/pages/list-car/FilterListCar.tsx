@@ -1,33 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import ic_back from "../../assets/images/ic_back.svg";
 import ic_filter_white from "../../assets/images/ic_filter_white.svg";
-import Item from "./item";
-import Slider from "./slider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import ListCar from "../List-car/ListCar";
+import Slider from "./Slider";
 import { useSelector } from "react-redux";
 import data from "../../constants/locchuyenxe.json";
 import SortButton from "../../components/SortButton";
+import FilterHeader from "../../components/FilterHeader";
+import { Trip } from "../TripModels";
 
-interface Trip {
-  uuid: string;
-  name: string;
-  departure_time: string;
-  pick_up_date: string;
-  vehicle_name: string;
-  duration_in_min: number;
-  merchant_start_point_name: string;
-  merchant_end_point_name: string;
-  transport_information: {
-    image_url: string;
-    rating: string;
-    name: string;
-  };
-  discount_amount: number;
-}
-
-const Filter = () => {
+const FilterListCar = () => {
   const trip = data.json.coreData.data;
   const filteredTrips = useSelector(
     (state: any) => state.filteredTrips.filteredTrips
@@ -48,6 +30,27 @@ const Filter = () => {
     "asc" | "desc" | null
   >(null);
   const [selectedButton, setSelectedButton] = useState<string>("");
+
+  const buttonConfigs = [
+    {
+      label: "Giờ chạy",
+      field: "departure_time",
+      selected: selectedFilters.includes("departure_time"),
+      sortDirection: sortDirectionDeparture,
+    },
+    {
+      label: "Giá vé",
+      field: "discount_amount",
+      selected: selectedFilters.includes("discount_amount"),
+      sortDirection: sortDirectionDiscount,
+    },
+    {
+      label: "Đánh giá",
+      field: "rating",
+      selected: selectedFilters.includes("rating"),
+      sortDirection: sortDirectionRating,
+    },
+  ];
 
   useEffect(() => {
     if (appliedFilter === true) {
@@ -98,7 +101,7 @@ const Filter = () => {
     setFiltered(sortedTrips);
   };
 
-  const handleSort = (field: string) => {
+  const _handleSort = (field: string) => {
     let newSortDirection: "asc" | "desc" | null = null;
 
     let sortedTrips: Trip[] = [...filtered];
@@ -139,7 +142,7 @@ const Filter = () => {
     sortTripsAndUpdate(sortedTrips, newSortDirection, field);
   };
 
-  const handCancle = () => {
+  const _handCancle = () => {
     setSelectedFilters([]);
     setSelectedButton("");
     setSortDirectionDeparture(null);
@@ -152,48 +155,15 @@ const Filter = () => {
     }
   };
 
-  const buttonConfigs = [
-    {
-      label: "Giờ chạy",
-      field: "departure_time",
-      selected: selectedFilters.includes("departure_time"),
-      sortDirection: sortDirectionDeparture,
-    },
-    {
-      label: "Giá vé",
-      field: "discount_amount",
-      selected: selectedFilters.includes("discount_amount"),
-      sortDirection: sortDirectionDiscount,
-    },
-    {
-      label: "Đánh giá",
-      field: "rating",
-      selected: selectedFilters.includes("rating"),
-      sortDirection: sortDirectionRating,
-    },
-  ];
+ 
   return (
     <div>
       <div className={"header-filter-list"}>
-        <div className="flex p-5 bg-white items-center">
-          <div style={{ marginRight: "5px" }}>
-            <Link to={"/"}>
-              <img src={ic_back} alt="Back" />
-            </Link>
-          </div>
-          <div>
-            <h1 className="font-bold text-xl">Chọn chuyến đi</h1>
-            <h2 className="sub-title">Long Biên - An Lão</h2>
-          </div>
-          <div
-            className="cancle-filter"
-            style={{
-              display: selectedFilters.length > 0 ? "block" : "none",
-            }}
-          >
-            <h2 onClick={() => handCancle()}>Xoá lọc</h2>
-          </div>
-        </div>
+        <FilterHeader
+          title="Chọn chuyến đi"
+          subTitle="Long Biên - An Lão"
+          onCancel={_handCancle}
+        />
         <div>
           <Slider />
         </div>
@@ -203,7 +173,7 @@ const Filter = () => {
               key={index}
               label={item.label}
               selected={item.selected}
-              onClick={() => handleSort(item.field)}
+              onClick={() => _handleSort(item.field)}
               sortDirection={item.sortDirection}
             />
           ))}
@@ -219,10 +189,10 @@ const Filter = () => {
       </div>
 
       <div className="main-list-filter">
-        <Item filteredTrips={filtered} />
+        <ListCar filteredTrips={filtered} />
       </div>
     </div>
   );
 };
 
-export default Filter;
+export default FilterListCar;

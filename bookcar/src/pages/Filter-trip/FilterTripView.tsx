@@ -1,10 +1,10 @@
 import React from "react";
-import ic_close from "../../../assets/images/ic_close.svg";
-import Time from "./TimeView";
+import ic_close from "../../assets/images/ic_close.svg";
+import Time from "./TimeTripView";
 import { Link} from "react-router-dom";
 
 
-export default function ListView() {
+export default function FilterTripView() {
   return (
     <div>
       <div className="flex bg-white header-filter">

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NumberWithComans } from "../../../utils/groupTripsByDate";
+import { NumberWithComans } from "../../utils/groupTripsByDate";
 import Slider from "@mui/material/Slider";
 
 interface PriceProps {
