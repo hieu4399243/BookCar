@@ -1,0 +1,92 @@
+.main-list {
+    background: linear-gradient(to right, #f1f1f1, #f2f2f2);
+    margin-top: 60px;
+}
+
+/* ---- Css garage ----- */
+.garage {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+
+.garage-list-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #dfdddd;
+    padding: 10px 0px 10px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.garage-list-item:last-child {
+    border-bottom: none;
+}
+
+.garage-list::-webkit-scrollbar-thumb {
+    background-color: #999;
+}
+
+.garage-list::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+}
+
+.garage-list {
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-top: 0.75rem;
+}
+
+/* ----- Css category car ----- */
+.category-car {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-top: 20px;
+    padding-bottom: 80px;
+}
+
+.vertical-list {
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-top: 0.75rem;
+}
+
+/* ---- Css footer filter trip ---- */
+.footer-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+
+.button-left {
+    width: 48%;
+    background: #e6e6e6;
+    padding: 15px;
+    border-radius: 7px;
+    color: black;
+    font-weight: 600;
+}
+
+.button-right {
+    width: 48%;
+    padding: 15px;
+    border-radius: 7px;
+    background-color: #4465f0;
+    color: white;
+    font-weight: 600;
+
+}

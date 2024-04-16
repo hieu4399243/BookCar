@@ -8,6 +8,7 @@ import data from "../../constants/locchuyenxe.json";
 import SortButton from "../../components/SortButton";
 import FilterHeader from "../../components/FilterHeader";
 import { Trip } from "../TripModels";
+import "./ListCar.css"
 
 const FilterListCar = () => {
   const trip = data.json.coreData.data;
@@ -158,7 +159,7 @@ const FilterListCar = () => {
  
   return (
     <div>
-      <div className={"header-filter-list"}>
+      <div className="header-filter-list">
         <FilterHeader
           title="Chọn chuyến đi"
           subTitle="Long Biên - An Lão"

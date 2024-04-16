@@ -76,7 +76,7 @@ const ListCar: React.FC<ItemProps> = ({ filteredTrips }) => {
     <div>
       <div
         ref={containerRef}
-        style={{ overflowY: "scroll", maxHeight: "800px" }}
+        style={{ overflowY: "scroll", maxHeight: "1000px" }}
       >
         {prevFilteredTrips.map((item, index) => (
           <CarListItem

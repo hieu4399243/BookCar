@@ -2,6 +2,8 @@ import React from "react";
 import ic_close from "../../assets/images/ic_close.svg";
 import Time from "./TimeTripView";
 import { Link} from "react-router-dom";
+import "./FilterTrip.css";
+
 
 
 export default function FilterTripView() {

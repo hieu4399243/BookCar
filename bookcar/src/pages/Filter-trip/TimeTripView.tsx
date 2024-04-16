@@ -66,7 +66,7 @@ export default function TimeView() {
   ];
 
   return (
-    <div className="">
+    <div>
       <div>
         <h2 className="px-5 pt-5 font-semibold">Thời gian khởi hành</h2>
 
