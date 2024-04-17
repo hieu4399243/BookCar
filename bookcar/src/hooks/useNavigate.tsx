@@ -12,7 +12,7 @@ interface RouteComponentProps {
   };
 }
 
-const useNavigate = ({ history }: RouteComponentProps) => {
+const useNavigateTo = ({ history }: RouteComponentProps) => {
   const navigateTo = (path: string) => {
     history.push(path);
   };
@@ -20,4 +20,4 @@ const useNavigate = ({ history }: RouteComponentProps) => {
   return navigateTo;
 };
 
-export default useNavigate;
+export default useNavigateTo;

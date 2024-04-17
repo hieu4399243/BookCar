@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import PriceView from "./PriceTripView";
 import TimeOption from "../../components/TimeOption";
 import GarageListItem from "../../components/List/GarageListItem";
 import VehicleListItem from "../../components/List/VehicleListItem";
-import { useDispatch, useSelector } from "react-redux";
 import {
   setFilteredTrips,
   setAppliedFilter,
@@ -11,211 +11,265 @@ import {
 import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
 import data from "../../constants/locchuyenxe.json";
 import { Trip } from "../TripModels";
-import { useNavigate } from "react-router-dom";
+import useNavigateTo from "../../hooks/useNavigate";
 
-export default function TimeTripView() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const appliedFilter = useSelector(
-    (state: any) => state.filteredTrips.appliedFilter.filter
-  );
-  const [priceRange, setPriceRange] = useState([0, 3000000]);
-  const [vehicleCheckboxes, setVehicleCheckboxes] = useState<string[]>([]);
-  const [garageCheckboxes, setGarageCheckboxes] = useState<string[]>([]);
-  const groupedTrips = groupTripsByTimeOfDate(data.json.coreData.data);
-  const groupedTripsLength = data.json.coreData.data;
-  const [tempFilteredTrips, setTempFilteredTrips] =
-    useState(groupedTripsLength);
-  const [clickedOption, setClickedOption] = useState<string | null>(null);
+interface TimeTripViewProps {
+  dispatch: any;
+  appliedFilter: any;
+}
 
-  useEffect(() => {
+interface TimeTripViewState {
+  selectedTime: string[];
+  priceRange: number[];
+  vehicleCheckboxes: string[];
+  garageCheckboxes: string[];
+  groupedTrips: { [key: string]: Trip[] };
+  groupedTripsLength: Trip[];
+  tempFilteredTrips: Trip[] | null;
+  clickedOption: string | null;
+}
+
+class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
+  private navigateTo: ((path: string) => void) | null = null;
+  constructor(props: TimeTripViewProps) {
+    super(props);
+    this.state = {
+      selectedTime: [],
+      priceRange: [0, 3000000],
+      vehicleCheckboxes: [],
+      garageCheckboxes: [],
+      groupedTrips: groupTripsByTimeOfDate(data.json.coreData.data),
+      groupedTripsLength: data.json.coreData.data,
+      tempFilteredTrips: null,
+      clickedOption: null,
+    };
+  }
+
+  componentDidMount() {
+    const { appliedFilter } = this.props;
     if (appliedFilter) {
-      setSelectedTime(appliedFilter.selectedTime);
-      setPriceRange(appliedFilter.priceRange);
-      setVehicleCheckboxes(appliedFilter.vehicleCheckboxes);
-      setGarageCheckboxes(appliedFilter.garageCheckboxes);
+      this.setState({
+        selectedTime: appliedFilter.selectedTime,
+        priceRange: appliedFilter.priceRange,
+        vehicleCheckboxes: appliedFilter.vehicleCheckboxes,
+        garageCheckboxes: appliedFilter.garageCheckboxes,
+      });
     }
-  }, [appliedFilter]);
+  }
 
-  useEffect(() => {
-    let currentFilteredTrips = data.json.coreData.data;
-    if (selectedTime.length > 0) {
-      currentFilteredTrips = selectedTime.reduce(
-        (acc: Trip[], time: string) => {
+  componentDidUpdate(prevProps: TimeTripViewProps, prevState: TimeTripViewState) {
+    const {
+      selectedTime,
+      priceRange,
+      garageCheckboxes,
+      vehicleCheckboxes,
+      groupedTrips,
+    } = this.state;
+    if (
+      prevState.selectedTime !== selectedTime ||
+      prevState.priceRange !== priceRange ||
+      prevState.garageCheckboxes !== garageCheckboxes ||
+      prevState.vehicleCheckboxes !== vehicleCheckboxes ||
+      prevState.groupedTrips !== groupedTrips
+    ) {
+      let currentFilteredTrips = data.json.coreData.data;
+      if (selectedTime.length > 0) {
+        currentFilteredTrips = selectedTime.reduce((acc: Trip[], time: string) => {
           return acc.concat(groupedTrips[time] || []);
-        },
-        []
-      );
+        }, []);
+      }
+
+      currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
+        return (
+          trip.discount_amount >= priceRange[0] &&
+          trip.discount_amount <= priceRange[1] &&
+          (vehicleCheckboxes.length === 0 ||
+            vehicleCheckboxes.includes(trip.vehicle_name)) &&
+          (garageCheckboxes.length === 0 ||
+            garageCheckboxes.includes(trip.transport_information.name))
+        );
+      });
+
+      const timerId = setTimeout(() => {
+        this.setState({ tempFilteredTrips: currentFilteredTrips });
+      }, 500);
+
+      return () => clearTimeout(timerId);
     }
+  }
 
-    currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
-      return (
-        trip.discount_amount >= priceRange[0] &&
-        trip.discount_amount <= priceRange[1] &&
-        (vehicleCheckboxes.length === 0 ||
-          vehicleCheckboxes.includes(trip.vehicle_name)) &&
-        (garageCheckboxes.length === 0 ||
-          garageCheckboxes.includes(trip.transport_information.name))
-      );
-    });
-
-    const timerId = setTimeout(() => {
-      setTempFilteredTrips(currentFilteredTrips);
-    }, 500);
-
-    return () => clearTimeout(timerId);
-  }, [
-    selectedTime,
-    priceRange,
-    garageCheckboxes,
-    vehicleCheckboxes,
-    groupedTrips,
-  ]);
-
-  const applyFilters = () => {
+  applyFilters = () => {
+    const {
+      tempFilteredTrips,
+      selectedTime,
+      priceRange,
+      vehicleCheckboxes,
+      garageCheckboxes,
+    } = this.state;
     const appliedFilters = {
       selectedTime: selectedTime,
       priceRange: priceRange,
       vehicleCheckboxes: vehicleCheckboxes,
       garageCheckboxes: garageCheckboxes,
     };
-    dispatch(setFilteredTrips(tempFilteredTrips));
-    dispatch(setAppliedFilter(appliedFilters));
-    navigate("/filter");
+    this.props.dispatch(setFilteredTrips(tempFilteredTrips));
+    this.props.dispatch(setAppliedFilter(appliedFilters));
+    //navigate("/filter");
   };
 
-  const handleCancel = () => {
-    setClickedOption(null);
-    setSelectedTime([]);
-    dispatch(setFilteredTrips(groupedTripsLength));
-    setPriceRange([0, 3000000]);
-    setVehicleCheckboxes([]);
-    setGarageCheckboxes([]);
+  handleCancel = () => {
+    this.setState({
+      clickedOption: null,
+      selectedTime: [],
+    });
+    this.props.dispatch(setFilteredTrips(this.state.groupedTripsLength));
+    this.setState({
+      priceRange: [0, 3000000],
+      vehicleCheckboxes: [],
+      garageCheckboxes: [],
+    });
   };
 
-  const handleFilter = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    time: string
-  ) => {
+  handleFilter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, time: string) => {
+    const { selectedTime, clickedOption } = this.state;
     const updateSelectedTime = selectedTime.includes(time)
       ? selectedTime.filter((t) => t !== time)
       : [...selectedTime, time];
-    setSelectedTime(updateSelectedTime);
-    setClickedOption(time === clickedOption ? null : time);
+    this.setState({ selectedTime: updateSelectedTime, clickedOption: time === clickedOption ? null : time });
   };
 
-  const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
-  const seenTransportNames = new Set<string>();
-
-  data.json.coreData.data.forEach((trip: Trip) => {
-    const transportName = trip.transport_information.name;
-    if (!seenTransportNames.has(transportName)) {
-      uniqueTransportNames.push({
-        name: transportName,
-        imageUrl: trip.transport_information.image_url,
-      });
-      seenTransportNames.add(transportName);
-    }
-  });
-
-  const allVehicleNames = Array.from(
-    new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
-  );
-
-  const isOptionSelected = (time: string) => selectedTime.includes(time);
-
-  const handleCheckBoxByVehicle = (name: string) => {
+  handleCheckBoxByVehicle = (name: string) => {
+    const { vehicleCheckboxes } = this.state;
     const updatedVehicleCheckboxes = vehicleCheckboxes.includes(name)
       ? vehicleCheckboxes.filter((checkbox) => checkbox !== name)
       : [...vehicleCheckboxes, name];
-    setVehicleCheckboxes(updatedVehicleCheckboxes);
+    this.setState({ vehicleCheckboxes: updatedVehicleCheckboxes });
   };
 
-  const handleCheckBoxByGarage = (name: string) => {
+  handleCheckBoxByGarage = (name: string) => {
+    const { garageCheckboxes } = this.state;
     const updatedGarageCheckboxes = garageCheckboxes.includes(name)
       ? garageCheckboxes.filter((checkbox) => checkbox !== name)
       : [...garageCheckboxes, name];
-    setGarageCheckboxes(updatedGarageCheckboxes);
+    this.setState({ garageCheckboxes: updatedGarageCheckboxes });
   };
 
-  const timeOptions: { time: string; label: string }[] = [
-    { time: "morning", label: "Sáng sớm" },
-    { time: "noon", label: "Buổi sáng" },
-    { time: "afternoon", label: "Buổi trưa" },
-    { time: "evening", label: "Buổi tối" },
-  ];
+  render() {
+    const {
+      selectedTime,
+      priceRange,
+      tempFilteredTrips,
+      clickedOption,
+      vehicleCheckboxes,
+      garageCheckboxes,
+    } = this.state;
 
-  return (
-    <div>
+    const timeOptions: { time: string; label: string }[] = [
+      { time: "morning", label: "Sáng sớm" },
+      { time: "noon", label: "Buổi sáng" },
+      { time: "afternoon", label: "Buổi trưa" },
+      { time: "evening", label: "Buổi tối" },
+    ];
+
+    const isOptionSelected = (time: string) => selectedTime.includes(time);
+
+    const uniqueTransportNames: { name: string; imageUrl: string }[] = [];
+    const seenTransportNames = new Set<string>();
+
+    data.json.coreData.data.forEach((trip: Trip) => {
+      const transportName = trip.transport_information.name;
+      if (!seenTransportNames.has(transportName)) {
+        uniqueTransportNames.push({
+          name: transportName,
+          imageUrl: trip.transport_information.image_url,
+        });
+        seenTransportNames.add(transportName);
+      }
+    });
+
+    const allVehicleNames = Array.from(
+      new Set(data.json.coreData.data.map((trip: Trip) => trip.vehicle_name))
+    );
+
+    return (
       <div>
-        <h2 className="px-5 pt-5 font-semibold">Thời gian khởi hành</h2>
+        <div>
+          <h2 className="px-5 pt-5 font-semibold">Thời gian khởi hành</h2>
 
-        <div className="grid grid-cols-2 main-grid">
-          {timeOptions.map(({ time, label }, index) => (
-            <TimeOption
-              key={index}
-              isSelected={isOptionSelected(time)}
-              time={time}
-              handleFilter={handleFilter}
-              label={label}
-            />
-          ))}
-        </div>
-
-        <PriceView setPriceRange={setPriceRange} priceRange={priceRange} />
-
-        <div className="garage">
-          <div>
-            <h2 className="font-semibold mb-3">Nhà xe</h2>
+          <div className="grid grid-cols-2 main-grid">
+            {timeOptions.map(({ time, label }, index) => (
+              <TimeOption
+                key={index}
+                isSelected={isOptionSelected(time)}
+                time={time}
+                handleFilter={this.handleFilter}
+                label={label}
+              />
+            ))}
           </div>
-          <div>
-            <div className="garage-list">
-              <ul>
-                {uniqueTransportNames.map((item, index) => (
-                  <GarageListItem
-                    key={index}
-                    item={item}
-                    isChecked={garageCheckboxes.includes(item.name)}
-                    handleCheckBox={handleCheckBoxByGarage}
-                  />
-                ))}
-              </ul>
+
+          {/* <PriceView setPriceRange={this.setPriceRange} priceRange={priceRange} /> */}
+
+          <div className="garage">
+            <div>
+              <h2 className="font-semibold mb-3">Nhà xe</h2>
+            </div>
+            <div>
+              <div className="garage-list">
+                <ul>
+                  {uniqueTransportNames.map((item, index) => (
+                    <GarageListItem
+                      key={index}
+                      item={item}
+                      isChecked={garageCheckboxes.includes(item.name)}
+                      handleCheckBox={this.handleCheckBoxByGarage}
+                    />
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="category-car">
-          <div>
-            <h2 className="font-semibold mb-3">Loại xe</h2>
-          </div>
-          <div>
-            <div className="vertical-list">
-              <ul>
-                {allVehicleNames.map((name, index) => (
-                  <VehicleListItem
-                    key={index}
-                    name={name}
-                    vehicleCheckboxes={vehicleCheckboxes.includes(name)}
-                    handleCheckBox={handleCheckBoxByVehicle}
-                  />
-                ))}
-              </ul>
+
+          <div className="category-car">
+            <div>
+              <h2 className="font-semibold mb-3">Loại xe</h2>
+            </div>
+            <div>
+              <div className="vertical-list">
+                <ul>
+                  {allVehicleNames.map((name, index) => (
+                    <VehicleListItem
+                      key={index}
+                      name={name}
+                      vehicleCheckboxes={vehicleCheckboxes.includes(name)}
+                      handleCheckBox={this.handleCheckBoxByVehicle}
+                    />
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="footer-list">
-          <button className="button-left" onClick={handleCancel}>
-            Xoá lọc
-          </button>
-          <button className="button-right" onClick={applyFilters}>
-            Áp dụng(
-            {tempFilteredTrips && tempFilteredTrips.length
-              ? tempFilteredTrips.length
-              : 0}
-            )
-          </button>
+
+          <div className="footer-list">
+            <button className="button-left" onClick={this.handleCancel}>
+              Xoá lọc
+            </button>
+            <button className="button-right" onClick={this.applyFilters}>
+              Áp dụng(
+              {tempFilteredTrips && tempFilteredTrips.length
+                ? tempFilteredTrips.length
+                : 0}
+              )
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
+
+const mapStateToProps = (state: any) => ({
+  appliedFilter: state.filteredTrips.appliedFilter.filter,
+});
+
+export default connect(mapStateToProps)(TimeTripView);
