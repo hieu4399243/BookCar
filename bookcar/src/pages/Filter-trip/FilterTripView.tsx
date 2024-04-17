@@ -1,6 +1,6 @@
 import React from "react";
 import ic_close from "../../assets/images/ic_close.svg";
-import Time from "./TimeTripView";
+import TimeTripView from "./TimeTripView";
 import { Link} from "react-router-dom";
 import "./FilterTrip.css";
 
@@ -16,7 +16,7 @@ export default function FilterTripView() {
         <h1 className="font-bold text-xl">Lọc chuyến xe</h1>
       </div>
       <div className="main-list">
-        <Time />
+        <TimeTripView />
       </div>
     </div>
   );
