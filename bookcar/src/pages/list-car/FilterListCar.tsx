@@ -15,6 +15,7 @@ const FilterListCar = () => {
   const filteredTrips = useSelector(
     (state: any) => state.filteredTrips.filteredTrips
   );
+  console.log(filteredTrips);
   const appliedFilter = useSelector(
     (state: any) => state.filteredTrips.appliedFilter.filterApplied
   );
@@ -181,7 +182,7 @@ const FilterListCar = () => {
 
           <Link
             className={`${appliedFilter ? "filter-selected" : "filter-icon"}`}
-            to={"/list"}
+            to={"/filter"}
           >
             <button>Lọc</button>
             <img src={ic_filter_white} alt="Filter" />

@@ -1,12 +1,27 @@
-import React from "react";
-import {
-  Route,
-  Link,
-  Routes,
-} from "react-router-dom";
+import React, {Component} from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Main() {
-  const main = () => {
+const NavigateButtons = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="absolute top-96">
+      <div>
+        <button className="text-[25px] mb-3" onClick={() => navigate("/list")}>
+          Danh sách chuyến đi
+        </button>
+      </div>
+      <div>
+        <button className="text-[25px]" onClick={() => navigate("/filter")}>
+          Lọc chuyến xe
+        </button>
+      </div>
+    </div>
+  );
+};
+
+class Main extends Component {
+  render() {
     return (
       <div className="h-screen bg-[#012f48] text-center">
         <div className=" text-center text-white relative">
@@ -16,25 +31,12 @@ export default function Main() {
             <h1 className="absolute top-16 text-[20px] font-bold uppercase">
               Xe liên tỉnh
             </h1>
-            <div className="absolute top-96">
-              <div>
-                <Link className="text-[25px] mb-3" to={'/filter'}>
-                  Danh sách chuyến đi
-                </Link>
-              </div>
-              <div>
-                <Link className="text-[25px]" to={'/list'}>Lọc chuyến xe</Link>
-              </div>
-            </div>
+            <NavigateButtons />
           </div>
         </div>
       </div>
-    )
-  };
-
-  return (
-    <div>
-      {main()}
-    </div>
-  );
+    );
+  }
 }
+
+export default Main;

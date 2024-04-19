@@ -11,7 +11,7 @@ import {
 import { groupTripsByTimeOfDate } from "../../utils/groupTripsByDate";
 import data from "../../constants/locchuyenxe.json";
 import { Trip } from "../TripModels";
-import useNavigateTo from "../../hooks/useNavigate";
+import { useNavigate } from "react-router";
 
 interface TimeTripViewProps {
   dispatch: any;
@@ -29,8 +29,36 @@ interface TimeTripViewState {
   clickedOption: string | null;
 }
 
+interface NavigationComponentProps {
+  applyFilters: () => void;
+  tempFilteredTrips: any;
+}
+
+const NavigationComponent: React.FC<NavigationComponentProps> = ({
+  applyFilters,
+  tempFilteredTrips,
+}) => {
+  const navigate = useNavigate();
+
+  const _handleFilter = () => {
+    applyFilters();
+    navigate("/list");
+  };
+
+  return (
+    <div>
+      <button className="button-right" onClick={_handleFilter}>
+        Áp dụng(
+        {tempFilteredTrips && tempFilteredTrips.length
+          ? tempFilteredTrips.length
+          : 0}
+        )
+      </button>
+    </div>
+  );
+};
+
 class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
-  private navigateTo: ((path: string) => void) | null = null;
   constructor(props: TimeTripViewProps) {
     super(props);
     this.state = {
@@ -40,7 +68,7 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
       garageCheckboxes: [],
       groupedTrips: groupTripsByTimeOfDate(data.json.coreData.data),
       groupedTripsLength: data.json.coreData.data,
-      tempFilteredTrips: null,
+      tempFilteredTrips: data.json.coreData.data,
       clickedOption: null,
     };
   }
@@ -57,7 +85,10 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     }
   }
 
-  componentDidUpdate(prevProps: TimeTripViewProps, prevState: TimeTripViewState) {
+  componentDidUpdate(
+    prevProps: TimeTripViewProps,
+    prevState: TimeTripViewState
+  ) {
     const {
       selectedTime,
       priceRange,
@@ -74,9 +105,12 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     ) {
       let currentFilteredTrips = data.json.coreData.data;
       if (selectedTime.length > 0) {
-        currentFilteredTrips = selectedTime.reduce((acc: Trip[], time: string) => {
-          return acc.concat(groupedTrips[time] || []);
-        }, []);
+        currentFilteredTrips = selectedTime.reduce(
+          (acc: Trip[], time: string) => {
+            return acc.concat(groupedTrips[time] || []);
+          },
+          []
+        );
       }
 
       currentFilteredTrips = currentFilteredTrips.filter((trip: Trip) => {
@@ -98,7 +132,7 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     }
   }
 
-  applyFilters = () => {
+  _handleApplyFilters = () => {
     const {
       tempFilteredTrips,
       selectedTime,
@@ -114,10 +148,9 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     };
     this.props.dispatch(setFilteredTrips(tempFilteredTrips));
     this.props.dispatch(setAppliedFilter(appliedFilters));
-    //navigate("/filter");
   };
 
-  handleCancel = () => {
+  _handleCancel = () => {
     this.setState({
       clickedOption: null,
       selectedTime: [],
@@ -130,15 +163,21 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     });
   };
 
-  handleFilter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, time: string) => {
+  _handleFilter = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    time: string
+  ) => {
     const { selectedTime, clickedOption } = this.state;
     const updateSelectedTime = selectedTime.includes(time)
       ? selectedTime.filter((t) => t !== time)
       : [...selectedTime, time];
-    this.setState({ selectedTime: updateSelectedTime, clickedOption: time === clickedOption ? null : time });
+    this.setState({
+      selectedTime: updateSelectedTime,
+      clickedOption: time === clickedOption ? null : time,
+    });
   };
 
-  handleCheckBoxByVehicle = (name: string) => {
+  _handleCheckBoxByVehicle = (name: string) => {
     const { vehicleCheckboxes } = this.state;
     const updatedVehicleCheckboxes = vehicleCheckboxes.includes(name)
       ? vehicleCheckboxes.filter((checkbox) => checkbox !== name)
@@ -146,12 +185,16 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
     this.setState({ vehicleCheckboxes: updatedVehicleCheckboxes });
   };
 
-  handleCheckBoxByGarage = (name: string) => {
+  _handleCheckBoxByGarage = (name: string) => {
     const { garageCheckboxes } = this.state;
     const updatedGarageCheckboxes = garageCheckboxes.includes(name)
       ? garageCheckboxes.filter((checkbox) => checkbox !== name)
       : [...garageCheckboxes, name];
     this.setState({ garageCheckboxes: updatedGarageCheckboxes });
+  };
+
+  setPriceRange = (priceRange: number[]) => {
+    this.setState({ priceRange });
   };
 
   render() {
@@ -202,13 +245,16 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
                 key={index}
                 isSelected={isOptionSelected(time)}
                 time={time}
-                handleFilter={this.handleFilter}
+                handleFilter={this._handleFilter}
                 label={label}
               />
             ))}
           </div>
 
-          {/* <PriceView setPriceRange={this.setPriceRange} priceRange={priceRange} /> */}
+          <PriceView
+            setPriceRange={this.setPriceRange}
+            priceRange={priceRange}
+          />
 
           <div className="garage">
             <div>
@@ -222,7 +268,7 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
                       key={index}
                       item={item}
                       isChecked={garageCheckboxes.includes(item.name)}
-                      handleCheckBox={this.handleCheckBoxByGarage}
+                      handleCheckBox={this._handleCheckBoxByGarage}
                     />
                   ))}
                 </ul>
@@ -242,7 +288,7 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
                       key={index}
                       name={name}
                       vehicleCheckboxes={vehicleCheckboxes.includes(name)}
-                      handleCheckBox={this.handleCheckBoxByVehicle}
+                      handleCheckBox={this._handleCheckBoxByVehicle}
                     />
                   ))}
                 </ul>
@@ -251,16 +297,15 @@ class TimeTripView extends Component<TimeTripViewProps, TimeTripViewState> {
           </div>
 
           <div className="footer-list">
-            <button className="button-left" onClick={this.handleCancel}>
-              Xoá lọc
-            </button>
-            <button className="button-right" onClick={this.applyFilters}>
-              Áp dụng(
-              {tempFilteredTrips && tempFilteredTrips.length
-                ? tempFilteredTrips.length
-                : 0}
-              )
-            </button>
+            <div>
+              <button className="button-left" onClick={this._handleCancel}>
+                Xoá lọc
+              </button>
+            </div>
+            <NavigationComponent
+              applyFilters={this._handleApplyFilters}
+              tempFilteredTrips={tempFilteredTrips}
+            />
           </div>
         </div>
       </div>

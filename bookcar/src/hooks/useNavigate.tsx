@@ -1,23 +1,17 @@
-interface RouteComponentProps {
-  history: {
-    push: (path: string) => void;
-  };
-  location: {
-    pathname: string;
-  };
-  match: {
-    params: {
-      [key: string]: string;
-    };
-  };
+import React from "react";
+import { useNavigate, useParams, NavigateFunction } from "react-router";
+
+type RouteParams = Record<string, string | undefined>;
+interface Props {
+  params: RouteParams;
+  navigate: NavigateFunction;
 }
 
-const useNavigateTo = ({ history }: RouteComponentProps) => {
-  const navigateTo = (path: string) => {
-    history.push(path);
-  };
+const withNavigate = (Component: React.ComponentType<Props>) => (props: any) => {
+  const navigate = useNavigate();
+  const params = useParams<RouteParams>();
 
-  return navigateTo;
+  return <Component {...props} params={params} navigate={navigate} />;
 };
 
-export default useNavigateTo;
+export default withNavigate;

@@ -73,16 +73,16 @@
 
 
 .button-left {
-    width: 48%;
+    width: 190px;
     background: #e6e6e6;
-    padding: 15px;
+    padding: 15px 50px;
     border-radius: 7px;
     color: black;
     font-weight: 600;
 }
 
 .button-right {
-    width: 48%;
+    width: 190px;
     padding: 15px;
     border-radius: 7px;
     background-color: #4465f0;
