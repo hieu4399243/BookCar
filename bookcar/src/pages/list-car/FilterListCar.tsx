@@ -1,68 +1,73 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import ic_filter_white from "../../assets/images/ic_filter_white.svg";
 import ListCar from "../List-car/ListCar";
 import Slider from "./Slider";
-import { useSelector } from "react-redux";
+import { connect} from "react-redux";
 import data from "../../constants/locchuyenxe.json";
 import SortButton from "../../components/SortButton";
 import FilterHeader from "../../components/FilterHeader";
 import { Trip } from "../TripModels";
-import "./ListCar.css"
+import "./ListCar.css";
+import { setFilteredTrips } from "../../stores/Features/Slices/FilterTripSlice";
 
-const FilterListCar = () => {
-  const trip = data.json.coreData.data;
-  const filteredTrips = useSelector(
-    (state: any) => state.filteredTrips.filteredTrips
-  );
-  console.log(filteredTrips);
-  const appliedFilter = useSelector(
-    (state: any) => state.filteredTrips.appliedFilter.filterApplied
-  );
-  const [initialData, setInitialData] = useState<Trip[]>(filteredTrips);
-  const [filtered, setFiltered] = useState<Trip[]>(filteredTrips || []);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [sortDirectionDeparture, setSortDirectionDeparture] = useState<
-    "asc" | "desc" | null
-  >(null);
-  const [sortDirectionRating, setSortDirectionRating] = useState<
-    "asc" | "desc" | null
-  >(null);
-  const [sortDirectionDiscount, setSortDirectionDiscount] = useState<
-    "asc" | "desc" | null
-  >(null);
-  const [selectedButton, setSelectedButton] = useState<string>("");
+interface FilterListCarProps {
+  filteredTrips: Trip[];
+  appliedFilter: boolean;
+  setFilteredTrips: (trips: Trip[]) => void;
+}
 
-  const buttonConfigs = [
-    {
-      label: "Giờ chạy",
-      field: "departure_time",
-      selected: selectedFilters.includes("departure_time"),
-      sortDirection: sortDirectionDeparture,
-    },
-    {
-      label: "Giá vé",
-      field: "discount_amount",
-      selected: selectedFilters.includes("discount_amount"),
-      sortDirection: sortDirectionDiscount,
-    },
-    {
-      label: "Đánh giá",
-      field: "rating",
-      selected: selectedFilters.includes("rating"),
-      sortDirection: sortDirectionRating,
-    },
-  ];
+interface FilterListCarState {
+  initialData: Trip[];
+  filteredTrips: Trip[];
+  appliedFilter: boolean;
+  selectedFilters: string[];
+  sortDirectionDeparture: "asc" | "desc" | null;
+  sortDirectionRating: "asc" | "desc" | null;
+  sortDirectionDiscount: "asc" | "desc" | null;
+  selectedButton: string;
+  filtered: Trip[];
+}
 
-  useEffect(() => {
-    if (appliedFilter === true) {
-      setFiltered(filteredTrips);
+class FilterListCar extends Component<FilterListCarProps, FilterListCarState> {
+  constructor(props: FilterListCarProps) {
+    super(props);
+    const trip = data.json.coreData.data;
+    this.state = {
+      initialData: trip,
+      filteredTrips: props.filteredTrips || [],
+      appliedFilter: props.appliedFilter,
+      selectedFilters: [],
+      sortDirectionDeparture: null,
+      sortDirectionRating: null,
+      sortDirectionDiscount: null,
+      selectedButton: "",
+      filtered: trip || [],
+    };
+  }
+
+  componentDidMount() {
+    if (this.state.appliedFilter) {
+      this.setState({ filtered: this.state.filteredTrips });
     } else {
-      setFiltered(trip);
+      this.setState({ filtered: this.state.initialData });
     }
-  }, [appliedFilter, filteredTrips, trip]);
+  }
 
-  const sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
+  componentDidUpdate(prevProps: FilterListCarProps) {
+    if (prevProps.filteredTrips !== this.props.filteredTrips) {
+      this.setState({ filteredTrips: this.props.filteredTrips });
+    }
+    if (prevProps.appliedFilter !== this.props.appliedFilter) {
+      if (this.props.appliedFilter) {
+        this.setState({ filtered: this.state.filteredTrips });
+      } else {
+        this.setState({ filtered: this.state.initialData });
+      }
+    }
+  }
+
+  sortByDepartureTimeAndDate = (a: Trip, b: Trip) => {
     const dateComparison = a.pick_up_date.localeCompare(b.pick_up_date);
     if (dateComparison === 0) {
       return a.departure_time.localeCompare(b.departure_time);
@@ -70,14 +75,14 @@ const FilterListCar = () => {
     return dateComparison;
   };
 
-  const sortRating = (a: Trip, b: Trip) => {
+  sortRating = (a: Trip, b: Trip) => {
     return (
       parseFloat(a.transport_information.rating) -
       parseFloat(b.transport_information.rating)
     );
   };
 
-  const sortTripsAndUpdate = (
+  sortTripsAndUpdate = (
     trips: Trip[],
     direction: "asc" | "desc" | null,
     field: string
@@ -86,12 +91,12 @@ const FilterListCar = () => {
     if (field === "departure_time") {
       sortedTrips.sort((a, b) =>
         direction === "asc"
-          ? sortByDepartureTimeAndDate(a, b)
-          : sortByDepartureTimeAndDate(b, a)
+          ? this.sortByDepartureTimeAndDate(a, b)
+          : this.sortByDepartureTimeAndDate(b, a)
       );
     } else if (field === "rating") {
       sortedTrips.sort((a, b) =>
-        direction === "asc" ? sortRating(a, b) : sortRating(b, a)
+        direction === "asc" ? this.sortRating(a, b) : this.sortRating(b, a)
       );
     } else if (field === "discount_amount") {
       sortedTrips.sort((a, b) =>
@@ -100,36 +105,41 @@ const FilterListCar = () => {
           : b.discount_amount - a.discount_amount
       );
     }
-    setFiltered(sortedTrips);
+    this.setState({ filteredTrips: sortedTrips });
   };
 
-  const _handleSort = (field: string) => {
+  _handleSort = (field: string) => {
     let newSortDirection: "asc" | "desc" | null = null;
 
-    let sortedTrips: Trip[] = [...filtered];
+    let sortedTrips: Trip[] = [...this.state.filteredTrips];
     let updatedFilters: string[] = [];
     let selectedButtonIcon = "";
     if (field === "departure_time") {
-      newSortDirection = sortDirectionDeparture === "asc" ? "desc" : "asc";
-      setSortDirectionDeparture(newSortDirection);
+      newSortDirection =
+        this.state.sortDirectionDeparture === "asc" ? "desc" : "asc";
+      this.setState({ sortDirectionDeparture: newSortDirection });
       sortedTrips.sort((a, b) =>
         newSortDirection === "asc"
-          ? sortByDepartureTimeAndDate(a, b)
-          : sortByDepartureTimeAndDate(b, a)
+          ? this.sortByDepartureTimeAndDate(a, b)
+          : this.sortByDepartureTimeAndDate(b, a)
       );
       updatedFilters = ["departure_time"];
       selectedButtonIcon = "sortDirectionDeparture";
     } else if (field === "rating") {
-      newSortDirection = sortDirectionRating === "asc" ? "desc" : "asc";
-      setSortDirectionRating(newSortDirection);
+      newSortDirection =
+        this.state.sortDirectionRating === "asc" ? "desc" : "asc";
+      this.setState({ sortDirectionRating: newSortDirection });
       sortedTrips.sort((a, b) =>
-        newSortDirection === "asc" ? sortRating(a, b) : sortRating(b, a)
+        newSortDirection === "asc"
+          ? this.sortRating(a, b)
+          : this.sortRating(b, a)
       );
       updatedFilters = ["rating"];
       selectedButtonIcon = "sortDirectionRating";
     } else if (field === "discount_amount") {
-      newSortDirection = sortDirectionDiscount === "asc" ? "desc" : "asc";
-      setSortDirectionDiscount(newSortDirection);
+      newSortDirection =
+        this.state.sortDirectionDiscount === "asc" ? "desc" : "asc";
+      this.setState({ sortDirectionDiscount: newSortDirection });
       sortedTrips.sort((a, b) =>
         newSortDirection === "asc"
           ? a.discount_amount - b.discount_amount
@@ -139,62 +149,98 @@ const FilterListCar = () => {
       selectedButtonIcon = "sortDirectionDiscount";
     }
 
-    setSelectedFilters(updatedFilters);
-    setSelectedButton(selectedButtonIcon);
-    sortTripsAndUpdate(sortedTrips, newSortDirection, field);
+    this.setState({
+      selectedFilters: updatedFilters,
+      selectedButton: selectedButtonIcon,
+    });
+    this.sortTripsAndUpdate(sortedTrips, newSortDirection, field);
   };
 
-  const _handCancle = () => {
-    setSelectedFilters([]);
-    setSelectedButton("");
-    setSortDirectionDeparture(null);
-    setSortDirectionRating(null);
-    setSortDirectionDiscount(null);
-    if (appliedFilter === true) {
-      setFiltered(filteredTrips);
+  _handleCancel() {
+    this.setState({
+      selectedFilters: [],
+      selectedButton: "",
+      sortDirectionDeparture: null,
+      sortDirectionRating: null,
+      sortDirectionDiscount: null,
+    });
+    if (this.props.appliedFilter === true) {
+      this.setState({ filteredTrips: this.props.filteredTrips });
     } else {
-      setFiltered(trip);
+      this.setState({ filteredTrips: this.state.initialData });
     }
-  };
+  }
 
- 
-  return (
-    <div>
-      <div className="header-filter-list">
-        <FilterHeader
-          title="Chọn chuyến đi"
-          subTitle="Long Biên - An Lão"
-          onCancel={_handCancle}
-        />
-        <div>
-          <Slider />
+  render() {
+    const { appliedFilter } = this.props;
+    const buttonConfigs = [
+      {
+        label: "Giờ chạy",
+        field: "departure_time",
+        selected: this.state.selectedFilters.includes("departure_time"),
+        sortDirection: this.state.sortDirectionDeparture,
+      },
+      {
+        label: "Giá vé",
+        field: "discount_amount",
+        selected: this.state.selectedFilters.includes("discount_amount"),
+        sortDirection: this.state.sortDirectionDiscount,
+      },
+      {
+        label: "Đánh giá",
+        field: "rating",
+        selected: this.state.selectedFilters.includes("rating"),
+        sortDirection: this.state.sortDirectionRating,
+      },
+    ];
+
+    return (
+      <div>
+        <div className="header-filter-list">
+          <FilterHeader
+            title="Chọn chuyến đi"
+            subTitle="Long Biên - An Lão"
+            onCancel={this._handleCancel}
+          />
+          <div>
+            <Slider />
+          </div>
+          <div className="filter-button">
+            {buttonConfigs.map((item, index) => (
+              <SortButton
+                key={index}
+                label={item.label}
+                selected={item.selected}
+                onClick={() => this._handleSort(item.field)}
+                sortDirection={item.sortDirection}
+              />
+            ))}
+
+            <Link
+              className={`${appliedFilter ? "filter-selected" : "filter-icon"}`}
+              to={"/filter"}
+            >
+              <button>Lọc</button>
+              <img src={ic_filter_white} alt="Filter" />
+            </Link>
+          </div>
         </div>
-        <div className="filter-button">
-          {buttonConfigs.map((item, index) => (
-            <SortButton
-              key={index}
-              label={item.label}
-              selected={item.selected}
-              onClick={() => _handleSort(item.field)}
-              sortDirection={item.sortDirection}
-            />
-          ))}
 
-          <Link
-            className={`${appliedFilter ? "filter-selected" : "filter-icon"}`}
-            to={"/filter"}
-          >
-            <button>Lọc</button>
-            <img src={ic_filter_white} alt="Filter" />
-          </Link>
+        <div className="main-list-filter">
+          <ListCar filteredTrips={this.state.filtered} />
         </div>
       </div>
+    );
+  }
+}
 
-      <div className="main-list-filter">
-        <ListCar filteredTrips={filtered} />
-      </div>
-    </div>
-  );
-};
+const mapStateToProps = (state: any) => ({
+  filteredTrips: state.filteredTrips.filteredTrips,
+  appliedFilter: state.filteredTrips.appliedFilter.filterApplied,
+});
 
-export default FilterListCar;
+const mapDispatchToProps = (dispatch: any) => ({
+  setFilteredTrips: (trips: Trip[]) => dispatch(setFilteredTrips(trips)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FilterListCar);

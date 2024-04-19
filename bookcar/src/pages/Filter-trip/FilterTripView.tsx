@@ -4,20 +4,18 @@ import TimeTripView from "./TimeTripView";
 import { useNavigate } from "react-router-dom";
 import "./FilterTrip.css";
 
-// Functional component
 const ImageButtons = () => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const _handleClick = () => {
     navigate('/list'); 
   };
 
   return (
-    <img src={ic_close} alt="Close Icon" onClick={handleClick} />
+    <img src={ic_close} alt="Close Icon" onClick={_handleClick} />
   );
 };
 
-// Class component
 class FilterTripView extends Component {
   render() {
     return (

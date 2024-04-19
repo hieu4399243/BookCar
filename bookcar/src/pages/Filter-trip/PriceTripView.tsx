@@ -9,7 +9,7 @@ interface PriceProps {
 
 
 class PriceView extends Component<PriceProps> {
-  handleChange = (event: Event, newValue: number | number[]) => {
+  _handleChange = (event: Event, newValue: number | number[]) => {
     this.props.setPriceRange(newValue as number[]);
   };
 
@@ -34,7 +34,7 @@ class PriceView extends Component<PriceProps> {
         <div className="range">
           <Slider
             value={priceRange}
-            onChange={this.handleChange}
+            onChange={this._handleChange}
             min={0}
             max={3000000}
           />

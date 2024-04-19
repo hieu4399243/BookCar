@@ -39,7 +39,6 @@ const NavigationComponent: React.FC<NavigationComponentProps> = ({
   tempFilteredTrips,
 }) => {
   const navigate = useNavigate();
-
   const _handleFilter = () => {
     applyFilters();
     navigate("/list");
