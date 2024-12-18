@@ -12,7 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/material": "^5.15.14",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
-    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/native": "^7.0.14",
     "@react-pdf/renderer": "^3.4.1",
     "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
